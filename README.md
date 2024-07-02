@@ -65,3 +65,4 @@ If you are hosting frontend code somewhere without using DFX, you may need to ma
 # Praca-wlasna-bootcamp
 # konkurs-bootcamp
 # konkurs-bootcampv2
+# konkurs-bootcampv2

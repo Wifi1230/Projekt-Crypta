@@ -1,0 +1,13 @@
+type CryptoEntry = record {
+  name: text;
+  shortcut: text;
+  icon: text;
+};
+service : {
+    "dodaj_wpis":(text) -> ();
+    "odczytaj_wpisy":()->(vec text) query;
+    "usun_wpis":(nat64) -> ();
+    "edytuj_wpis":(nat64,text) -> ();
+    "add_crypto":(CryptoEntry)->();
+    "get_all_cryptos":()->(vec CryptoEntry) query;
+}
