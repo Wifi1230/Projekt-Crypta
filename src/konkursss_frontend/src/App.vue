@@ -35,7 +35,7 @@
         <div v-if="showCryptocurrencies" class="width15 bg-gray-800 overflow-y-auto max-h-[9rem] z-50 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800">
             <!-- Wyświetlanie kryptowalut -->
             <ul class="text-sm text-white">
-              <li v-for="(crypto, index) in filteredCryptocurrencies" :key="crypto.id" class="flex items-center h-10 px-4">
+              <li v-for="(crypto) in filteredCryptocurrencies" :key="crypto.name" class="flex items-center h-10 px-4">
                 <img :src="crypto.icon" alt="Cryptocurrency" class="h-8 mr-2">
                 <p>{{ crypto.shortcut }} {{ crypto.name }}</p>
               </li>
@@ -50,20 +50,18 @@
 </template>
 <script setup>
 import { ref, onMounted } from 'vue';
+import { konkursss_backend } from 'declarations/konkursss_backend/index';
 
 // Lista kryptowalut
-const cryptocurrencies = ref([
-  { id: 1, name: 'Bitcoin', shortcut: 'BTC', icon: '/btc.png' },
-  { id: 2, name: 'Ethereum', shortcut: 'ETH', icon: '/eth.png' },
-  { id: 3, name: 'XRP', shortcut: 'XRP', icon: '/xrp.png' },
-  { id: 4, name: 'Internet Computer', shortcut: 'ICP', icon: '/icp.png' },
-  // Dodaj pozostałe kryptowaluty tutaj...
-]);
-
+const cryptocurrencies = ref([]);
+const filteredCryptocurrencies = ref([]);
+const downloadCryptocurrencies = async () => {
+  cryptocurrencies.value = await konkursss_backend.get_all_cryptos();
+  filteredCryptocurrencies.value = [...cryptocurrencies.value];
+};
 // Stan filtrujący listę kryptowalut
 const showCryptocurrencies = ref(false);
 const searchQuery = ref('');
-const filteredCryptocurrencies = ref([...cryptocurrencies.value]);
 
 // Funkcje do obsługi interakcji użytkownika
 const toggleCryptocurrencies = () => {
@@ -76,6 +74,15 @@ const filterCryptocurrencies = () => {
     crypto.name.toLowerCase().startsWith(query) || crypto.shortcut.toLowerCase().startsWith(query)
   );
 };
+const startAutoRefresh = () => {
+  setInterval(async () => {
+    await downloadCryptocurrencies();
+  }, 3000);
+};
+onMounted(async () => {
+  await downloadCryptocurrencies();
+  startAutoRefresh();
+});
 </script>
 
 <style scoped>

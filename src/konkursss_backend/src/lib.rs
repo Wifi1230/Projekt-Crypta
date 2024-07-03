@@ -12,7 +12,18 @@ thread_local! {// Define a thread-local storage (TLS) variable WPISY, which hold
 
 }
 thread_local! {
-    static KRYPTO: RefCell<Vec<CryptoEntry>> = RefCell::new(Vec::new());
+    static KRYPTO: RefCell<Vec<CryptoEntry>> = RefCell::new(vec![
+        CryptoEntry {
+            name: String::from("Bitcoin"),
+            shortcut: String::from("BTC"),
+            icon: String::from("btc.png"),
+        },
+        CryptoEntry {
+            name: String::from("Ethereum"),
+            shortcut: String::from("ETH"),
+            icon: String::from("eth.png"),
+        },
+    ]);
 }
 #[ic_cdk::update]
 fn dodaj_wpis(wpis: String) {
