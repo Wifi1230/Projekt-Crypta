@@ -6,24 +6,21 @@ struct CryptoEntry {
     shortcut: String,
     icon: String,
 }
-
+#[derive(Clone, CandidType, Deserialize)]
+struct AccEntry {
+    username: String,
+    email: String,
+    password: String,
+}
 thread_local! {// Define a thread-local storage (TLS) variable WPISY, which holds a RefCell containing a Vec of Strings.
     static WPISY: RefCell<Vec<String>> = RefCell::default();
 
 }
 thread_local! {
-    static KRYPTO: RefCell<Vec<CryptoEntry>> = RefCell::new(vec![
-        CryptoEntry {
-            name: String::from("Bitcoin"),
-            shortcut: String::from("BTC"),
-            icon: String::from("btc.png"),
-        },
-        CryptoEntry {
-            name: String::from("Ethereum"),
-            shortcut: String::from("ETH"),
-            icon: String::from("eth.png"),
-        },
-    ]);
+    static KRYPTO: RefCell<Vec<CryptoEntry>> = RefCell::new(Vec::new());
+}
+thread_local! {
+    static ACCOUNTS: RefCell<Vec<AccEntry>> = RefCell::new(Vec::new());
 }
 #[ic_cdk::update]
 fn dodaj_wpis(wpis: String) {
@@ -68,3 +65,15 @@ fn get_all_cryptos() -> Vec<CryptoEntry> {// Function to get all Cryptos from th
         crypto.borrow().clone() // This clones the vector for returning
     })
 }   
+#[ic_cdk::update]
+fn add_account(entry:AccEntry) {
+    ACCOUNTS.with(|accounts| {
+        accounts.borrow_mut().push(entry);
+    });
+}
+#[ic_cdk::query]
+fn get_all_accounts() -> Vec<AccEntry> {
+    ACCOUNTS.with(|accounts| {
+        accounts.borrow().clone() // This clones the vector for returning
+    })
+}

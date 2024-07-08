@@ -5,7 +5,7 @@
       
       <!-- Formularz rejestracji -->
       <div class="max-w-md w-full mx-auto p-8 bg-gray-700 border border-gray-900 rounded-lg shadow-lg">
-        <form @submit.prevent="register" class="space-y-4">
+        <form @submit.prevent="sendDatatoBack" class="space-y-4">
           <div>
             <label for="username" class="block text-sm font-medium text-white">Username</label>
             <input v-model="username" type="text" id="username" name="username" placeholder="Enter your username"
@@ -41,26 +41,32 @@
   <script setup>
   import { ref } from 'vue';
   import { useRouter } from 'vue-router';
+  import { konkursss_backend } from 'declarations/konkursss_backend/index';
   
   const router = useRouter();
-  
+
   const username = ref('');
   const email = ref('');
-  const password = ref('');
-  
-  const register = () => {
-    // Sprawdź, czy użytkownik już istnieje w localStorage
-    if (localStorage.getItem(username.value)) {
-      alert('Użytkownik już istnieje');
-      return;
-    }
-  
-    // Zapisz dane do localStorage
-    localStorage.setItem(username.value, JSON.stringify({ email: email.value, password: password.value }));
-  
-    // Przekierowanie na stronę logowania po zarejestrowaniu
+  const password = ref('')
+
+  const sendDatatoBack = async () => {
+  try {
+    const userData = {
+      username: username.value,
+      email: email.value,
+      password: password.value
+    };
+
+    // Wywołanie metody backendowej (zakładając, że jest dostępna jako globalna)
+    const response = await konkursss_backend.add_account(userData);
+
+    // Obsługa odpowiedzi backendowej, np. zaktualizowanie interfejsu użytkownika
+    console.log('Response from backend:', response);
     router.push('/login');
-  };
+  } catch (error) {
+    console.error('Error sending data to backend:', error); 
+  }
+};
   </script>
   
   <style scoped>

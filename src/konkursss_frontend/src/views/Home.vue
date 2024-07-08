@@ -47,7 +47,7 @@ const pobierzWpisy = async () => {
 const startAutoRefresh = () => {
   setInterval(async () => {
     await pobierzWpisy();
-  }, 3000);
+  }, 5000);
 };
 
 // Po zamontowaniu komponentu uruchamia pobieranie wpisów i automatyczne odświeżanie

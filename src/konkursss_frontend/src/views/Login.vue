@@ -35,22 +35,27 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { konkursss_backend } from 'declarations/konkursss_backend/index';
 
 const router = useRouter();
 
 const username = ref('');
 const password = ref('');
 
-const login = () => {
-  // Pobierz dane użytkownika z localStorage
-  const userData = JSON.parse(localStorage.getItem(username.value));
+const login = async () => {
+  try {
+    const accounts = await konkursss_backend.get_all_accounts();
 
-  // Sprawdź poprawność danych logowania
-  if (userData && userData.password === password.value) {
-    // Przekierowanie na stronę główną po zalogowaniu
-    router.push('/');
-  } else {
-    alert('Invalid username or password');
+    const user = accounts.find(account => account.username === username.value && account.password === password.value);
+
+    if (user) {
+      router.push('/');
+    } else {
+      error.value = 'Invalid username or password';
+    }
+  } catch (err) {
+    console.error('Error logging in:', err);
+    error.value = 'Error logging in. Please try again.';
   }
 };
 </script>

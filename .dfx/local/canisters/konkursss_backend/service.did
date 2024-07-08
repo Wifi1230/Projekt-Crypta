@@ -3,6 +3,11 @@ type CryptoEntry = record {
   shortcut: text;
   icon: text;
 };
+type AccEntry = record {
+    username: text;
+    email: text;
+    password: text;
+}
 service : {
     "dodaj_wpis":(text) -> ();
     "odczytaj_wpisy":()->(vec text) query;
@@ -10,4 +15,6 @@ service : {
     "edytuj_wpis":(nat64,text) -> ();
     "add_crypto":(CryptoEntry)->();
     "get_all_cryptos":()->(vec CryptoEntry) query;
+    "add_account":(AccEntry)->();
+    "get_all_accounts":()->(vec AccEntry) query;
 }

@@ -1,17 +1,15 @@
 <template>
-  <div>
+  <div @click="handleClickOutside">
       <header class="bg-gray-700 w-full h-1/5 fixed top-0 z-50">
-      <!-- Górna część nagłówka z logo -->
       <div class="h-3/4 flex justify-center items-center">
         <router-link to="/" class="h-full aspect-square">
           <img src="/logo2.png" alt="CRYPTA" class="h-full aspect-square"/>
         </router-link>
       </div>
       
-      <!-- Dolna część nagłówka z sekcjami -->
       <div class="h-1/4 grid grid-cols-3 items-center">
-        <!-- Pole wyszukiwania kryptowalut -->
         <div>
+          <div @click.stop>
           <input
             id="crypto_name"
             v-model="searchQuery"
@@ -19,11 +17,11 @@
             @click="toggleCryptocurrencies"
             placeholder="Crypto name"
             class="text-center placeholder-text-center placeholder-white text-white bg-transparent w-full px-4 py-2 border-none focus:outline-none">
+           </div>
           <button class="aspect-square w-fit h-full"></button>
         </div>
-        <!-- Sekcja "Voting" -->
         <div class="text-white text-center">
-          <p>Voting</p>
+          <p>Upload post</p>
         </div>
         
         <!-- Sekcja "Log in" -->
@@ -74,10 +72,13 @@ const filterCryptocurrencies = () => {
     crypto.name.toLowerCase().startsWith(query) || crypto.shortcut.toLowerCase().startsWith(query)
   );
 };
+const handleClickOutside = () => {
+  showCryptocurrencies.value = false;
+};
 const startAutoRefresh = () => {
   setInterval(async () => {
     await downloadCryptocurrencies();
-  }, 3000);
+  }, 15000);
 };
 onMounted(async () => {
   await downloadCryptocurrencies();
