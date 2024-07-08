@@ -21,7 +21,7 @@
           <button class="aspect-square w-fit h-full"></button>
         </div>
         <div class="text-white text-center">
-          <p>Upload post</p>
+          <router-link to="/upload">Upload post</router-link>
         </div>
         
         <!-- Sekcja "Log in" -->

@@ -6,7 +6,7 @@
       <!-- Placeholder na główną zawartość -->
       <div class="flex  justify-center w-full">
         <div class="w-2/3">
-          <div class="grid gap-4 my-10">
+          <div class="text-white grid gap-4 my-10">
             <!-- Wyświetlanie wpisów -->
             <div v-for="(wpis, index) in wpisy" :key="index" class="drop-shadow-xl bg-gray-700 p-4">
               <p>id: {{ index }}</p>
@@ -26,13 +26,8 @@ import { konkursss_backend } from 'declarations/konkursss_backend/index';
 
 // Tablica przechowująca wpisy na stronie
 const wpisy = ref([]);
-const nowyBlog = ref('');
 
 // Funkcje do zarządzania wpisami
-const dodajWpisy = async () => {
-  wpisy.value = await konkursss_backend.dodaj_wpis(nowyBlog.value);
-  await pobierzWpisy();
-};
 
 const deleteWpis = async (index) => {
   await konkursss_backend.usun_wpis(index);

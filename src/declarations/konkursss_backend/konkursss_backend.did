@@ -7,10 +7,15 @@ type AccEntry = record {
     username: text;
     email: text;
     password: text;
-}
+};
+type WpisAll = record {
+    post_text: text;
+    selected_crypto: text;
+    prediction: text;
+};
 service : {
-    "dodaj_wpis":(text) -> ();
-    "odczytaj_wpisy":()->(vec text) query;
+    "dodaj_wpis":(WpisAll) -> ();
+    "odczytaj_wpisy":()->(vec WpisAll) query;
     "usun_wpis":(nat64) -> ();
     "edytuj_wpis":(nat64,text) -> ();
     "add_crypto":(CryptoEntry)->();
