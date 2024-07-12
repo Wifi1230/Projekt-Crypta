@@ -17,6 +17,8 @@ struct WpisAll {
     post_text: String,
     selected_crypto: String,
     prediction: String,
+    likes: u32,
+    dislikes: u32, 
 }
 thread_local! {// Define a thread-local storage (TLS) variable WPISY, which holds a RefCell containing a Vec of Strings.
     static WPISY: RefCell<Vec<WpisAll>> = RefCell::default();
@@ -58,6 +60,23 @@ fn usun_wpis(id_wpisu: usize) {// Access the thread-local WPISY variable.
  //       *stary_wpis = nowy_wpis;// Replace the old entry with the new entry (nowy_wpis).
  //   });
 //}
+#[ic_cdk::update]
+fn like_wpis(id_wpisu: usize) {
+    WPISY.with(|wpisy| {
+        if let Some(wpis) = wpisy.borrow_mut().get_mut(id_wpisu) {
+            wpis.likes += 1;
+        }
+    });
+}
+
+#[ic_cdk::update]
+fn dislike_wpis(id_wpisu: usize) {
+    WPISY.with(|wpisy| {
+        if let Some(wpis) = wpisy.borrow_mut().get_mut(id_wpisu) {
+            wpis.dislikes += 1;
+        }
+    });
+}
 
 #[ic_cdk::update]
 fn add_crypto(entry:CryptoEntry) {

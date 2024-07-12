@@ -15,15 +15,19 @@ export interface CryptoEntry {
 export interface WpisAll {
   'post_text' : string,
   'prediction' : string,
+  'likes' : number,
   'selected_crypto' : string,
+  'dislikes' : number,
 }
 export interface _SERVICE {
   'add_account' : ActorMethod<[AccEntry], undefined>,
   'add_crypto' : ActorMethod<[CryptoEntry], undefined>,
+  'dislike_wpis' : ActorMethod<[bigint], undefined>,
   'dodaj_wpis' : ActorMethod<[WpisAll], undefined>,
   'edytuj_wpis' : ActorMethod<[bigint, string], undefined>,
   'get_all_accounts' : ActorMethod<[], Array<AccEntry>>,
   'get_all_cryptos' : ActorMethod<[], Array<CryptoEntry>>,
+  'like_wpis' : ActorMethod<[bigint], undefined>,
   'odczytaj_wpisy' : ActorMethod<[], Array<WpisAll>>,
   'usun_wpis' : ActorMethod<[bigint], undefined>,
 }
