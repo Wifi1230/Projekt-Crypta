@@ -36,12 +36,12 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { konkursss_backend } from 'declarations/konkursss_backend/index';
+import { userStore } from '../store'; // upewnij się, że ścieżka jest poprawna
 
 const router = useRouter();
 const postText = ref('');
-const selectedCrypto = ref(null); // inicjalizacja selectedCrypto
+const selectedCrypto = ref(null);
 const prediction = ref('');
-
 const cryptocurrencies = ref([]);
 
 const downloadCryptocurrencies = async () => {
@@ -50,21 +50,25 @@ const downloadCryptocurrencies = async () => {
 
 const submitPost = async () => {
   try {
-    console.log('Selected Crypto:', selectedCrypto.value);
+    if (!userStore.username) {
+      console.error('User is not logged in');
+      return;
+    }
 
     const postData = {
       post_text: postText.value,
       selected_crypto: selectedCrypto.value ? selectedCrypto.value.shortcut : '',
-      prediction: prediction.value, 
-      likes: BigInt(0),
-      dislikes: BigInt(0)
+      prediction: prediction.value,
+      likes: 0,
+      dislikes: 0,
+      username: userStore.username // Dodajemy nazwę użytkownika
     };
 
     const response = await konkursss_backend.dodaj_wpis(postData);
     console.log('Response from backend:', response);
     router.push('/');
   } catch (error) {
-    console.error('Error sending data to backend:', error); 
+    console.error('Error sending data to backend:', error);
   }
 };
 

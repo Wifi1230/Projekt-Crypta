@@ -1,6 +1,6 @@
 OPT_LEVEL = Some(0)
 TARGET = Some(x86_64-unknown-linux-gnu)
-OUT_DIR = Some(/home/wifi/konkurs/konkursss/target/release/build/psm-31347378603b5037/out)
+OUT_DIR = Some(/home/wifi/konkurs/konkursss/konkurs-bootcampv2/target/release/build/psm-31347378603b5037/out)
 HOST = Some(x86_64-unknown-linux-gnu)
 cargo:rerun-if-env-changed=CC_x86_64-unknown-linux-gnu
 CC_x86_64-unknown-linux-gnu = None
@@ -43,4 +43,4 @@ HOST_ARFLAGS = None
 cargo:rerun-if-env-changed=ARFLAGS
 ARFLAGS = None
 cargo:rustc-link-lib=static=psm_s
-cargo:rustc-link-search=native=/home/wifi/konkurs/konkursss/target/release/build/psm-31347378603b5037/out
+cargo:rustc-link-search=native=/home/wifi/konkurs/konkursss/konkurs-bootcampv2/target/release/build/psm-31347378603b5037/out

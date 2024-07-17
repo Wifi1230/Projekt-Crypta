@@ -9,6 +9,7 @@
             <div v-for="(wpis, index) in filteredWpisy" :key="index" class="post drop-shadow-xl bg-gray-700 p-4 relative rounded-lg">
               <div class="flex items-start mb-2">
                 <div class="text-sm text-gray-400 mr-4">
+                  <span class="block">{{ wpis.username }}</span>
                   <span class="block">{{ wpis.selected_crypto }}</span>
                   <span 
                     class="block" 

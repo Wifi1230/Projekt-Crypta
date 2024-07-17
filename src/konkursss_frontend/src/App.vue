@@ -6,7 +6,6 @@
           <img src="/logo2.png" alt="CRYPTA" class="h-full aspect-square" />
         </router-link>
       </div>
-
       <div class="h-1/4 grid grid-cols-3 items-center">
         <div class="grid grid-cols-[1fr_auto] w-full h-full align-middle">
           <div @click.stop>
@@ -26,13 +25,12 @@
           <router-link to="/upload">Upload post</router-link>
         </div>
         <div class="text-white text-center w-full h-full align-middle px-4 py-2">
-          <router-link to="/login">Log in</router-link>
+          <span v-if="userStore.username">{{ userStore.username }}</span>
+          <router-link v-else to="/login">Log in</router-link>
+          <button v-if="userStore.username" @click="logout" class="ml-4">Logout</button>
         </div>
       </div>
-
-      <!-- Lista filtrowanych kryptowalut z przewijaniem -->
       <div v-if="showCryptocurrencies" class="width15 bg-gray-800 overflow-y-auto max-h-[9rem] z-50 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800">
-        <!-- Wyświetlanie kryptowalut -->
         <ul class="text-sm text-white">
           <li v-for="crypto in filteredCryptocurrencies" :key="crypto.id" @click="selectCrypto(crypto)" class="flex items-center h-10 px-4 cursor-pointer">
             <img :src="crypto.icon" alt="Cryptocurrency" class="h-8 mr-2">
@@ -42,7 +40,6 @@
       </div>
     </header>
     <main>
-      <!-- Przekazujemy selectedCrypto jako props do komponentu renderowanego przez router-view -->
       <router-view :selectedCrypto="selectedCrypto"></router-view>
     </main>
   </div>
@@ -51,14 +48,14 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { konkursss_backend } from 'declarations/konkursss_backend/index';
-// Lista kryptowalut
+import { userStore } from './store'; // upewnij się, że ścieżka jest poprawna
+
 const cryptocurrencies = ref([]);
 const filteredCryptocurrencies = ref([]);
 const searchQuery = ref('');
 const showCryptocurrencies = ref(false);
 const selectedCrypto = ref('');
 
-// Pobieranie kryptowalut i filtrowanie
 const downloadCryptocurrencies = async () => {
   cryptocurrencies.value = await konkursss_backend.get_all_cryptos();
   filteredCryptocurrencies.value = [...cryptocurrencies.value];
@@ -80,9 +77,10 @@ const handleClickOutside = () => {
 };
 
 const selectCrypto = (crypto) => {
-  selectedCrypto.value = crypto.shortcut; // Przypisz skrót kryptowaluty
+  selectedCrypto.value = crypto.shortcut;
   showCryptocurrencies.value = false;
 };
+
 const resetSelection = () => {
   selectedCrypto.value = '';
   filteredCryptocurrencies.value = [...cryptocurrencies.value];
@@ -94,6 +92,10 @@ const startAutoRefresh = () => {
   }, 15000);
 };
 
+const logout = () => {
+  userStore.setUsername('');
+};
+
 onMounted(async () => {
   await downloadCryptocurrencies();
   startAutoRefresh();
@@ -101,7 +103,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* scrollbar style */
 ::-webkit-scrollbar {
   width: 8px;
 }

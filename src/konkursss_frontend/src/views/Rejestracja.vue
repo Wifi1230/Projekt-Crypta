@@ -1,42 +1,47 @@
 <template>
-    <div class="bg-slate-900  h-screen flex flex-col items-center justify-center">
-<!-- Nagłówek Rejestracja -->
-      <h1 class="text-3xl font-semibold text-white mt-8">Rejestracja</h1>
-      
-      <!-- Formularz rejestracji -->
-      <div class="max-w-md w-full mx-auto p-8 bg-gray-700 border border-gray-900 rounded-lg shadow-lg">
-        <form @submit.prevent="sendDatatoBack" class="space-y-4">
-          <div>
-            <label for="username" class="block text-sm font-medium text-white">Username</label>
-            <input v-model="username" type="text" id="username" name="username" placeholder="Enter your username"
-              class="mt-1 block w-full px-3 py-2 rounded-md bg-gray-800 text-white focus:outline-none focus:ring focus:ring-gray-400"
-              required>
-          </div>
-          <div>
-            <label for="email" class="block text-sm font-medium text-white">Email</label>
-            <input v-model="email" type="email" id="email" name="email" placeholder="Enter your email"
-              class="mt-1 block w-full px-3 py-2 rounded-md bg-gray-800 text-white focus:outline-none focus:ring focus:ring-gray-400"
-              required>
-          </div>
-          <div>
-            <label for="password" class="block text-sm font-medium text-white">Password</label>
-            <input v-model="password" type="password" id="password" name="password" placeholder="Enter your password"
-              class="mt-1 block w-full px-3 py-2 rounded-md bg-gray-800 text-white focus:outline-none focus:ring focus:ring-gray-400"
-              required>
-          </div>
-          <button type="submit"
-            class="w-full px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 focus:outline-none focus:ring focus:ring-gray-400">
-            Register
-          </button>
-        </form>
-  
-        <!-- Link do logowania -->
-        <div class="text-sm text-gray-400 mt-2 text-center">
-          Masz już konto? <router-link to="/login" class="underline hover:text-gray-300">Zaloguj się</router-link>
+  <div class="bg-slate-900 h-screen flex flex-col items-center justify-center">
+    <h1 class="text-3xl font-semibold text-white mt-8">Rejestracja</h1>
+    
+    <div class="max-w-md w-full mx-auto p-8 bg-gray-700 border border-gray-900 rounded-lg shadow-lg">
+      <form @submit.prevent="sendDatatoBack" class="space-y-4">
+        <!-- Pole Username -->
+        <div>
+          <label for="username" class="block text-sm font-medium text-white">Username</label>
+          <input v-model="username" type="text" id="username" name="username" placeholder="Enter your username"
+            class="mt-1 block w-full px-3 py-2 rounded-md bg-gray-800 text-white focus:outline-none focus:ring focus:ring-gray-400"
+            required>
         </div>
+        <!-- Pole Email -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-white">Email</label>
+          <input v-model="email" type="email" id="email" name="email" placeholder="Enter your email"
+            class="mt-1 block w-full px-3 py-2 rounded-md bg-gray-800 text-white focus:outline-none focus:ring focus:ring-gray-400"
+            required>
+        </div>
+        <!-- Pole Password -->
+        <div>
+          <label for="password" class="block text-sm font-medium text-white">Password</label>
+          <input v-model="password" type="password" id="password" name="password" placeholder="Enter your password"
+            class="mt-1 block w-full px-3 py-2 rounded-md bg-gray-800 text-white focus:outline-none focus:ring focus:ring-gray-400"
+            required>
+        </div>
+        <!-- Przycisk do rejestracji -->
+        <button type="submit"
+          class="w-full px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 focus:outline-none focus:ring focus:ring-gray-400">
+          Register
+        </button>
+        <!-- Komunikat błędu -->
+        <p v-if="error" class="text-sm text-red-500 mt-2">{{ error }}</p>
+      </form>
+
+      <!-- Link do logowania -->
+      <div class="text-sm text-gray-400 mt-2 text-center">
+        Masz już konto? <router-link to="/login" class="underline hover:text-gray-300">Zaloguj się</router-link>
       </div>
     </div>
-  </template>
+  </div>
+</template>
+
   
   <script setup>
   import { ref } from 'vue';

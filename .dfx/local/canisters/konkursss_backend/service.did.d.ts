@@ -13,6 +13,7 @@ export interface CryptoEntry {
   'shortcut' : string,
 }
 export interface WpisAll {
+  'username' : string,
   'post_text' : string,
   'prediction' : string,
   'likes' : number,

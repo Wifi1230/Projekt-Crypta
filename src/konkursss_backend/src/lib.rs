@@ -19,6 +19,7 @@ struct WpisAll {
     prediction: String,
     likes: u32,
     dislikes: u32, 
+    username: String,
 }
 thread_local! {// Define a thread-local storage (TLS) variable WPISY, which holds a RefCell containing a Vec of Strings.
     static WPISY: RefCell<Vec<WpisAll>> = RefCell::default();
@@ -38,7 +39,7 @@ fn dodaj_wpis(entry:WpisAll) {
 }
 
 #[ic_cdk::query]
-fn odczytaj_wpisy() -> Vec<WpisAll> {
+fn      () -> Vec<WpisAll> {
     WPISY.with(|wpisy| {// Access the thread-local WPISY variable.
     wpisy.borrow().clone()// Borrow an immutable reference to the Vec inside WPISY and clone it to return.
     })

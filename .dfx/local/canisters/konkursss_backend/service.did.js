@@ -10,6 +10,7 @@ export const idlFactory = ({ IDL }) => {
     'shortcut' : IDL.Text,
   });
   const WpisAll = IDL.Record({
+    'username' : IDL.Text,
     'post_text' : IDL.Text,
     'prediction' : IDL.Text,
     'likes' : IDL.Nat32,
