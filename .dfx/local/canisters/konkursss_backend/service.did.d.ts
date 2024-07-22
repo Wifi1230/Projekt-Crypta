@@ -12,6 +12,8 @@ export interface CryptoEntry {
   'name' : string,
   'shortcut' : string,
 }
+export type Result = { 'Ok' : null } |
+  { 'Err' : string };
 export interface WpisAll {
   'username' : string,
   'post_text' : string,
@@ -21,15 +23,17 @@ export interface WpisAll {
   'dislikes' : number,
 }
 export interface _SERVICE {
-  'add_account' : ActorMethod<[AccEntry], undefined>,
+  'add_account' : ActorMethod<[AccEntry], Result>,
   'add_crypto' : ActorMethod<[CryptoEntry], undefined>,
-  'dislike_wpis' : ActorMethod<[bigint], undefined>,
+  'dislike_wpis' : ActorMethod<[string, bigint], undefined>,
   'dodaj_wpis' : ActorMethod<[WpisAll], undefined>,
   'edytuj_wpis' : ActorMethod<[bigint, string], undefined>,
   'get_all_accounts' : ActorMethod<[], Array<AccEntry>>,
   'get_all_cryptos' : ActorMethod<[], Array<CryptoEntry>>,
-  'like_wpis' : ActorMethod<[bigint], undefined>,
+  'like_wpis' : ActorMethod<[string, bigint], undefined>,
   'odczytaj_wpisy' : ActorMethod<[], Array<WpisAll>>,
+  'user_has_disliked' : ActorMethod<[string, bigint], boolean>,
+  'user_has_liked' : ActorMethod<[string, bigint], boolean>,
   'usun_wpis' : ActorMethod<[bigint], undefined>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;

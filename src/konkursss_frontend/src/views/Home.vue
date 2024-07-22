@@ -63,6 +63,7 @@ import { ref, onMounted, watch } from 'vue';
 import { konkursss_backend } from 'declarations/konkursss_backend/index';
 
 const props = defineProps(['selectedCrypto']);
+const userId = ref(''); // Załaduj ID użytkownika w odpowiedni sposób
 
 const wpisy = ref([]);
 const filteredWpisy = ref([]);
@@ -85,62 +86,69 @@ const filterPostsByCrypto = () => {
   }
 };
 
-const deleteWpis = async (index) => {
-  await konkursss_backend.usun_wpis(index);
-  await pobierzWpisy();
+const userHasLiked = async (postId) => {
+  return await konkursss_backend.user_has_liked(userId.value, postId);
+};
+
+const userHasDisliked = async (postId) => {
+  return await konkursss_backend.user_has_disliked(userId.value, postId);
 };
 
 const likePost = async (index) => {
-    try {
-        await konkursss_backend.like_wpis(BigInt(index));
-    } catch (e) {
-        console.error('Failed to like post:', e);
-    }
-};
+  try {
+    const postId = BigInt(index);
+    const hasLiked = await userHasLiked(postId);
+    const hasDisliked = await userHasDisliked(postId);
 
-const dislikePost = async (index) => {
-    try {
-        await konkursss_backend.dislike_wpis(BigInt(index));
-    } catch (e) {
-        console.error('Failed to dislike post:', e);
+    if (hasLiked) {
+      // Jeśli użytkownik już polubił post, anuluj "like"
+      await konkursss_backend.like_wpis(userId.value, postId);
+    } else {
+      // Jeśli użytkownik już odrzucił post, zamień "dislike" na "like"
+      if (hasDisliked) {
+        await konkursss_backend.dislike_wpis(userId.value, postId);
+      }
+      await konkursss_backend.like_wpis(userId.value, postId);
     }
-};
 
-const toggleComments = async (index) => {
-  wpisy.value[index].showComments = !wpisy.value[index].showComments;
-  if (wpisy.value[index].showComments && wpisy.value[index].comments.length === 0) {
-    wpisy.value[index].comments = await konkursss_backend.get_comments(wpisy.value[index].id);
+    await pobierzWpisy();
+  } catch (e) {
+    console.error('Failed to like post:', e);
   }
 };
 
-const addComment = async (index) => {
-  const commentText = newCommentText.value[index];
-  if (commentText.trim() !== '') {
-    const newComment = await konkursss_backend.add_comment(wpisy.value[index].id, commentText);
-    wpisy.value[index].comments.push(newComment);
-    newCommentText.value[index] = '';
+const dislikePost = async (index) => {
+  try {
+    const postId = BigInt(index);
+    const hasLiked = await userHasLiked(postId);
+    const hasDisliked = await userHasDisliked(postId);
+
+    if (hasDisliked) {
+      // Jeśli użytkownik już odrzucił post, anuluj "dislike"
+      await konkursss_backend.dislike_wpis(userId.value, postId);
+    } else {
+      // Jeśli użytkownik już polubił post, zamień "like" na "dislike"
+      if (hasLiked) {
+        await konkursss_backend.like_wpis(userId.value, postId);
+      }
+      await konkursss_backend.dislike_wpis(userId.value, postId);
+    }
+
+    await pobierzWpisy();
+  } catch (e) {
+    console.error('Failed to dislike post:', e);
   }
 };
 
 const startAutoRefresh = () => {
   setInterval(async () => {
     await pobierzWpisy();
-  }, 5000);
+  }, 5000); // Odświeżaj co 5 sekund
 };
 
-onMounted(() => {
-  pobierzWpisy();
+onMounted(async () => {
+  await pobierzWpisy();
   startAutoRefresh();
-
-  // Nasłuchiwanie zdarzenia refresh-posts
-  document.addEventListener('refresh-posts', async () => {
-    await pobierzWpisy();
-  });
-});
-
-watch(() => props.selectedCrypto, (newValue) => {
-  console.log('Selected Crypto in Home.vue watcher:', newValue);
-  filterPostsByCrypto();
 });
 </script>
 

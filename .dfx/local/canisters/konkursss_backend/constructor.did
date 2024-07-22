@@ -16,15 +16,18 @@ type WpisAll = record {
     dislikes: nat32;
     username: text;
 };
+type Result = variant { Ok; Err: text };
 service : {
-    "dodaj_wpis":(WpisAll) -> ();
-    "odczytaj_wpisy":()->(vec WpisAll) query;
-    "usun_wpis":(nat64) -> ();
-    "edytuj_wpis":(nat64,text) -> ();
-    "like_wpis": (nat64) -> ();
-    "dislike_wpis": (nat64) -> (); 
-    "add_crypto":(CryptoEntry)->();
-    "get_all_cryptos":()->(vec CryptoEntry) query;
-    "add_account":(AccEntry)->();
-    "get_all_accounts":()->(vec AccEntry) query;
+    "dodaj_wpis": (WpisAll) -> ();
+    "odczytaj_wpisy": () -> (vec WpisAll) query;
+    "usun_wpis": (nat64) -> ();
+    "edytuj_wpis": (nat64, text) -> ();
+    "like_wpis": (text, nat64) -> ();
+    "dislike_wpis": (text, nat64) -> (); 
+    "user_has_liked": (text, nat64) -> (bool) query;
+    "user_has_disliked": (text, nat64) -> (bool) query;
+    "add_crypto": (CryptoEntry) -> ();
+    "get_all_cryptos": () -> (vec CryptoEntry) query;
+    "add_account": (AccEntry) -> (Result);
+    "get_all_accounts": () -> (vec AccEntry) query;
 }
