@@ -36,6 +36,16 @@ struct Comment {
     wpis_index: usize,
 }
 
+#[derive(Clone, CandidType, Deserialize, Default)]
+struct CryptoProposal {
+    name: String,
+    shortcut: String,
+    icon: String,
+    proposer: String,
+    likes: u32,
+    dislikes: u32,
+}
+
 // Struktura do przechowywania głosów użytkowników
 #[derive(Clone, CandidType, Deserialize, Default)]
 struct UserVotes {
@@ -51,6 +61,8 @@ thread_local! {
     static VOTES: RefCell<HashMap<usize, UserVotes>> = RefCell::new(HashMap::new());
     static COMMENT_VOTES: RefCell<HashMap<(usize, usize), UserVotes>> = RefCell::new(HashMap::new());
     static COMMENTS: RefCell<HashMap<usize, Vec<Comment>>> = RefCell::new(HashMap::new());
+    static PROPOSALS: RefCell<Vec<CryptoProposal>> = RefCell::new(Vec::new());
+    static PROPOSAL_VOTES: RefCell<HashMap<usize, UserVotes>> = RefCell::new(HashMap::new());
 }
 
 // Funkcje aktualizacyjne i zapytań
@@ -269,5 +281,107 @@ fn user_has_liked_comment(user_id: String, wpis_index: usize, comment_index: usi
 fn user_has_disliked_comment(user_id: String, wpis_index: usize, comment_index: usize) -> bool {
     COMMENT_VOTES.with(|v| {
         v.borrow().get(&(wpis_index, comment_index)).map_or(false, |votes| votes.disliked.contains(&user_id))
+    })
+}
+
+// Dodawanie propozycji kryptowaluty
+#[ic_cdk::update]
+fn propose_crypto(proposal: CryptoProposal) {
+    PROPOSALS.with(|proposals| {
+        proposals.borrow_mut().push(proposal);
+    });
+}
+
+// Odczytywanie wszystkich propozycji
+#[ic_cdk::query]
+fn get_all_proposals() -> Vec<CryptoProposal> {
+    PROPOSALS.with(|proposals| {
+        proposals.borrow().clone()
+    })
+}
+
+// Lubię to dla propozycji
+#[ic_cdk::update]
+fn like_proposal(user_id: String, proposal_index: usize) {
+    PROPOSALS.with(|proposals| {
+        let mut proposals_mut = proposals.borrow_mut();
+        if let Some(proposal) = proposals_mut.get_mut(proposal_index) {
+            let mut votes = PROPOSAL_VOTES.with(|v| v.borrow_mut().entry(proposal_index).or_default().clone());
+
+            if votes.liked.contains(&user_id) {
+                // Anuluj "like"
+                votes.liked.remove(&user_id);
+                proposal.likes -= 1;
+            } else {
+                // Jeśli był "dislike", zamień na "like"
+                if votes.disliked.contains(&user_id) {
+                    votes.disliked.remove(&user_id);
+                    proposal.dislikes -= 1;
+                }
+                votes.liked.insert(user_id.clone());
+                proposal.likes += 1;
+            }
+
+            PROPOSAL_VOTES.with(|v| v.borrow_mut().insert(proposal_index, votes));
+
+            // Check if the proposal has enough likes to be accepted
+            if proposal.likes >= 5 {
+                // Add the crypto and remove the proposal
+                add_crypto(CryptoEntry {
+                    name: proposal.name.clone(),
+                    shortcut: proposal.shortcut.clone(),
+                    icon: proposal.icon.clone(),
+                });
+                proposals_mut.remove(proposal_index);
+            }
+        }
+    });
+}
+
+// Nie lubię dla propozycji
+#[ic_cdk::update]
+fn dislike_proposal(user_id: String, proposal_index: usize) {
+    PROPOSALS.with(|proposals| {
+        if let Some(proposal) = proposals.borrow_mut().get_mut(proposal_index) {
+            let mut votes = PROPOSAL_VOTES.with(|v| v.borrow_mut().entry(proposal_index).or_default().clone());
+
+            if votes.disliked.contains(&user_id) {
+                // Anuluj "dislike"
+                votes.disliked.remove(&user_id);
+                proposal.dislikes -= 1;
+            } else {
+                // Jeśli był "like", zamień na "dislike"
+                if votes.liked.contains(&user_id) {
+                    votes.liked.remove(&user_id);
+                    proposal.likes -= 1;
+                }
+                votes.disliked.insert(user_id.clone());
+                proposal.dislikes += 1;
+            }
+
+            PROPOSAL_VOTES.with(|v| v.borrow_mut().insert(proposal_index, votes));
+
+            // Check if the proposal has enough dislikes to be rejected
+            if proposal.dislikes >= 5 {
+                // Remove the proposal
+                proposals.borrow_mut().remove(proposal_index);
+            }
+        }
+    });
+}
+
+// Sprawdzanie, czy użytkownik polubił propozycję
+#[ic_cdk::query]
+fn user_has_liked_proposal(user_id: String, proposal_index: usize) -> bool {
+    PROPOSAL_VOTES.with(|v| {
+        v.borrow().get(&proposal_index).map_or(false, |votes| votes.liked.contains(&user_id))
+    })
+}
+
+// Sprawdzanie, czy użytkownik nie polubił propozycji
+#[ic_cdk::query]
+fn user_has_disliked_proposal(user_id: String, proposal_index: usize) -> bool {
+    PROPOSAL_VOTES.with(|v| {
+        v.borrow().get(&proposal_index).map_or(false, |votes| votes.disliked.contains(&user_id))
     })
 }

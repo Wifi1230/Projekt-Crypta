@@ -3,6 +3,8 @@ import Home from './views/Home.vue';
 import Login from './views/Login.vue';
 import Rejestracja from './views/Rejestracja.vue';
 import UploadPost from './views/UploadPost.vue';
+import Voting from './views/Voting.vue'; 
+
 const routes = [
   {
     path: '/',
@@ -23,6 +25,11 @@ const routes = [
     path: '/upload',
     name: 'UploadPost',
     component: UploadPost
+  },
+  {
+    path: '/voting',  // Nowa trasa
+    name: 'Voting',
+    component: Voting
   }
 ];
 

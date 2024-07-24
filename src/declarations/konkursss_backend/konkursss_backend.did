@@ -1,29 +1,43 @@
 type CryptoEntry = record {
-  name: text;
-  shortcut: text;
-  icon: text;
+    name: text;
+    shortcut: text;
+    icon: text;
 };
+
 type AccEntry = record {
     username: text;
     email: text;
     password: text;
 };
+
 type WpisAll = record {
     post_text: text;
     selected_crypto: text;
     prediction: text;
-    likes: nat32; 
+    likes: nat32;
     dislikes: nat32;
     username: text;
 };
+
 type Comment = record {
-  text: text;
-  username: text;
-  likes: nat32;
-  dislikes: nat32;
-  wpis_index: nat64;
+    text: text;
+    username: text;
+    likes: nat32;
+    dislikes: nat32;
+    wpis_index: nat64;
 };
+
 type Result = variant { Ok; Err: text };
+
+type CryptoProposal = record {
+    name: text;
+    shortcut: text;
+    icon: text;
+    proposer: text;
+    likes: nat32;
+    dislikes: nat32;
+};
+
 service : {
     // Funkcje wpisów
     "dodaj_wpis": (WpisAll) -> ();
@@ -43,11 +57,19 @@ service : {
     "add_account": (AccEntry) -> (Result);
     "get_all_accounts": () -> (vec AccEntry) query;
 
-    // Nowe funkcje dla komentarzy
+    // Funkcje dla komentarzy
     "dodaj_komentarz": (nat64, Comment) -> ();
     "odczytaj_komentarze": (nat64) -> (vec Comment) query;
     "like_comment": (text, nat64, nat64) -> ();
     "dislike_comment": (text, nat64, nat64) -> ();
     "user_has_liked_comment": (text, nat64, nat64) -> (bool) query;
     "user_has_disliked_comment": (text, nat64, nat64) -> (bool) query;
+
+    //  Funkcje dla propozycji kryptowalut
+    "propose_crypto": (CryptoProposal) -> ();
+    "get_all_proposals": () -> (vec CryptoProposal) query;
+    "like_proposal": (text, nat64) -> ();
+    "dislike_proposal": (text, nat64) -> ();
+    "user_has_liked_proposal": (text, nat64) -> (bool) query;
+    "user_has_disliked_proposal": (text, nat64) -> (bool) query;
 }

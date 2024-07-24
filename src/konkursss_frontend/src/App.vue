@@ -7,8 +7,8 @@
         </router-link>
       </div>
       <div class="h-1/4 grid grid-cols-3 items-center">
-        <div class="grid grid-cols-[1fr_auto] w-full h-full align-middle">
-          <div @click.stop>
+        <div class="grid grid-cols-2 w-full h-full align-middle">
+          <div @click.stop class="w-full">
             <input
               id="crypto_name"
               v-model="searchQuery"
@@ -19,7 +19,7 @@
               class="text-center placeholder-text-center placeholder-white text-white bg-transparent w-full h-full px-4 py-2 border-none focus:outline-none"
             />
           </div>
-          <button class="aspect-square w-fit h-full"></button>
+          <button rows="1" class="w-full h-full text-white text-center "> <router-link to="/voting">Add crypto</router-link></button>
         </div>
         <div class="text-white text-center w-full h-full align-middle px-4 py-2">
           <router-link to="/upload">Upload post</router-link>
