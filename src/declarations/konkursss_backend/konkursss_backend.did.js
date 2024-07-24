@@ -10,6 +10,13 @@ export const idlFactory = ({ IDL }) => {
     'name' : IDL.Text,
     'shortcut' : IDL.Text,
   });
+  const Comment = IDL.Record({
+    'username' : IDL.Text,
+    'text' : IDL.Text,
+    'likes' : IDL.Nat32,
+    'wpis_index' : IDL.Nat64,
+    'dislikes' : IDL.Nat32,
+  });
   const WpisAll = IDL.Record({
     'username' : IDL.Text,
     'post_text' : IDL.Text,
@@ -21,19 +28,37 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     'add_account' : IDL.Func([AccEntry], [Result], []),
     'add_crypto' : IDL.Func([CryptoEntry], [], []),
+    'dislike_comment' : IDL.Func([IDL.Text, IDL.Nat64, IDL.Nat64], [], []),
     'dislike_wpis' : IDL.Func([IDL.Text, IDL.Nat64], [], []),
+    'dodaj_komentarz' : IDL.Func([IDL.Nat64, Comment], [], []),
     'dodaj_wpis' : IDL.Func([WpisAll], [], []),
     'edytuj_wpis' : IDL.Func([IDL.Nat64, IDL.Text], [], []),
     'get_all_accounts' : IDL.Func([], [IDL.Vec(AccEntry)], ['query']),
     'get_all_cryptos' : IDL.Func([], [IDL.Vec(CryptoEntry)], ['query']),
+    'like_comment' : IDL.Func([IDL.Text, IDL.Nat64, IDL.Nat64], [], []),
     'like_wpis' : IDL.Func([IDL.Text, IDL.Nat64], [], []),
+    'odczytaj_komentarze' : IDL.Func(
+        [IDL.Nat64],
+        [IDL.Vec(Comment)],
+        ['query'],
+      ),
     'odczytaj_wpisy' : IDL.Func([], [IDL.Vec(WpisAll)], ['query']),
     'user_has_disliked' : IDL.Func(
         [IDL.Text, IDL.Nat64],
         [IDL.Bool],
         ['query'],
       ),
+    'user_has_disliked_comment' : IDL.Func(
+        [IDL.Text, IDL.Nat64, IDL.Nat64],
+        [IDL.Bool],
+        ['query'],
+      ),
     'user_has_liked' : IDL.Func([IDL.Text, IDL.Nat64], [IDL.Bool], ['query']),
+    'user_has_liked_comment' : IDL.Func(
+        [IDL.Text, IDL.Nat64, IDL.Nat64],
+        [IDL.Bool],
+        ['query'],
+      ),
     'usun_wpis' : IDL.Func([IDL.Nat64], [], []),
   });
 };
