@@ -2,6 +2,7 @@
   <div class="bg-slate-900 min-h-screen h-full overflow-hidden text-white flex flex-col">
     <div class="custom-height"></div>
 
+    <div class="max-w-2/3 mx-auto p-4">
     <!-- Section for adding new cryptocurrency proposal -->
     <div class="my-8">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -74,12 +75,15 @@
       </div>
     </div>
   </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { konkursss_backend } from 'declarations/konkursss_backend/index';
 import { userStore } from '../store'; // upewnij się, że ścieżka jest poprawna
+
+const userId = ref('');
 
 // State for new cryptocurrency proposal
 const newProposal = ref({
@@ -93,8 +97,9 @@ const proposals = ref([]);
 // Fetch proposals from backend
 const fetchProposals = async () => {
   try {
-    proposals.value = await konkursss_backend.get_all_proposals(); // Update method name
-    console.log('Proposals fetched:', proposals.value); // Debugging line
+    const proposalsData = await konkursss_backend.get_all_proposals();
+    proposals.value = proposalsData.map((proposal, index) => ({ ...proposal, index }));
+    console.log('Proposals fetched:', proposals.value);
   } catch (error) {
     console.error('Failed to fetch proposals:', error);
   }
@@ -123,34 +128,55 @@ const addProposal = async () => {
     console.error('Failed to add proposal:', error);
   }
 };
+const userHasLiked = async (poroposalId) => {
+  return await konkursss_backend.user_has_liked_proposal(userId.value, poroposalId);
+};
+
+// Check if user has disliked a post
+const userHasDisliked = async (poroposalId) => {
+  return await konkursss_backend.user_has_disliked_proposal(userId.value, poroposalId);
+};
+
 
 // Like a proposal
-const likeProposal = async (proposalIndex) => {
-  console.log('Proposal Index:', proposalIndex); // Debugging line
-  if (proposalIndex === undefined || proposalIndex === null) {
-    console.error('Proposal index is undefined or null');
-    return;
-  }
+const likeProposal = async (index) => {
   try {
-    const userId = userStore.username;
-    await konkursss_backend.like_proposal(userId, BigInt(proposalIndex));
-    await fetchProposals(); // Refresh the list to update likes
+  const poroposalId = BigInt(index);
+  const hasLiked = await userHasLiked(poroposalId);
+  const hasDisliked = await userHasDisliked(poroposalId);
+  
+  if (hasLiked) {
+      await konkursss_backend.like_proposal(userId.value, poroposalId);
+    } else {
+      // If the user disliked the post, remove the dislike and add a like
+      if (hasDisliked) {
+        await konkursss_backend.dislike_proposal(userId.value, poroposalId);
+      }
+      await konkursss_backend.like_proposal(userId.value, poroposalId);
+    }
+    await fetchProposals();
   } catch (error) {
     console.error('Failed to like proposal:', error);
   }
 };
 
 // Dislike a proposal
-const dislikeProposal = async (proposalIndex) => {
-  console.log('Proposal Index:', proposalIndex); // Debugging line
-  if (proposalIndex === undefined || proposalIndex === null) {
-    console.error('Proposal index is undefined or null');
-    return;
-  }
+const dislikeProposal = async (index) => {
   try {
-    const userId = userStore.username;
-    await konkursss_backend.dislike_proposal(userId, BigInt(proposalIndex));
-    await fetchProposals(); // Refresh the list to update dislikes
+  const poroposalId = BigInt(index);
+  const hasLiked = await userHasLiked(poroposalId);
+  const hasDisliked = await userHasDisliked(poroposalId);
+  
+  if (hasDisliked) {
+      await konkursss_backend.dislike_proposal(userId.value, poroposalId);
+    } else {
+      // If the user disliked the post, remove the dislike and add a like
+      if (hasLiked) {
+        await konkursss_backend.like_proposal(userId.value, poroposalId);
+      }
+      await konkursss_backend.dislike_proposal(userId.value, poroposalId);
+    }
+    await fetchProposals();
   } catch (error) {
     console.error('Failed to dislike proposal:', error);
   }

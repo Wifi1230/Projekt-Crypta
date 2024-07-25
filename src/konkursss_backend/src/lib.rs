@@ -304,8 +304,7 @@ fn get_all_proposals() -> Vec<CryptoProposal> {
 #[ic_cdk::update]
 fn like_proposal(user_id: String, proposal_index: usize) {
     PROPOSALS.with(|proposals| {
-        let mut proposals_mut = proposals.borrow_mut();
-        if let Some(proposal) = proposals_mut.get_mut(proposal_index) {
+        if let Some(proposal) = proposals.borrow_mut().get_mut(proposal_index) {
             let mut votes = PROPOSAL_VOTES.with(|v| v.borrow_mut().entry(proposal_index).or_default().clone());
 
             if votes.liked.contains(&user_id) {
@@ -313,8 +312,8 @@ fn like_proposal(user_id: String, proposal_index: usize) {
                 votes.liked.remove(&user_id);
                 proposal.likes -= 1;
             } else {
-                // Jeśli był "dislike", zamień na "like"
                 if votes.disliked.contains(&user_id) {
+                    // Remove dislike
                     votes.disliked.remove(&user_id);
                     proposal.dislikes -= 1;
                 }
@@ -332,13 +331,12 @@ fn like_proposal(user_id: String, proposal_index: usize) {
                     shortcut: proposal.shortcut.clone(),
                     icon: proposal.icon.clone(),
                 });
-                proposals_mut.remove(proposal_index);
+                proposals.borrow_mut().remove(proposal_index);
             }
         }
     });
 }
 
-// Nie lubię dla propozycji
 #[ic_cdk::update]
 fn dislike_proposal(user_id: String, proposal_index: usize) {
     PROPOSALS.with(|proposals| {
@@ -350,8 +348,8 @@ fn dislike_proposal(user_id: String, proposal_index: usize) {
                 votes.disliked.remove(&user_id);
                 proposal.dislikes -= 1;
             } else {
-                // Jeśli był "like", zamień na "dislike"
                 if votes.liked.contains(&user_id) {
+                    // Remove like
                     votes.liked.remove(&user_id);
                     proposal.likes -= 1;
                 }
