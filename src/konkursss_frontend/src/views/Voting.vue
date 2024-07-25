@@ -2,27 +2,21 @@
   <div class="bg-slate-900 min-h-screen h-full overflow-hidden text-white flex flex-col">
     <div class="custom-height"></div>
 
-    <div class="max-w-2/3 mx-auto p-4">
+    <div class="w-2/3 mx-auto p-4">
     <!-- Section for adding new cryptocurrency proposal -->
     <div class="my-8">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Input fields for new cryptocurrency proposal -->
-        <input 
-          v-model="newProposal.icon" 
-          type="text" 
-          placeholder="Ikona (URL)" 
-          class="p-2 rounded bg-gray-700 border border-gray-600 text-white w-full"
-        />
         <input 
           v-model="newProposal.shortcut" 
           type="text" 
-          placeholder="Skrót" 
+          placeholder="Shortcut" 
           class="p-2 rounded bg-gray-700 border border-gray-600 text-white w-full"
         />
         <input 
           v-model="newProposal.name" 
           type="text" 
-          placeholder="Nazwa" 
+          placeholder="Name" 
           class="p-2 rounded bg-gray-700 border border-gray-600 text-white w-full"
         />
       </div>
@@ -30,13 +24,13 @@
         @click="addProposal" 
         class="mt-4 bg-gray-700 rounded px-4 py-2 text-white w-full"
       >
-        Dodaj Propozycję
+        Add proposal
       </button>
     </div>
 
     <!-- Displaying cryptocurrency proposals -->
     <div v-if="proposals.length === 0" class="text-center text-gray-400">
-      Brak propozycji do wyświetlenia.
+      No proposals to display.
     </div>
     <div v-else>
       <div class="grid grid-cols-2">
@@ -45,32 +39,20 @@
         :key="proposal.index"
         class="bg-gray-700 p-4 m-2 rounded drop-shadow-xl"
       >
-        <div class="flex items-center mb-4">
-          <!-- Display proposal details -->
-          <img :src="proposal.icon" alt="Icon" class="w-10 h-10 mr-4 rounded" />
-          <div class="flex-1">
-            <div class="flex justify-between items-center">
-              <span class="text-lg">{{ proposal.name }} ({{ proposal.shortcut }})</span>
-              <div class="flex items-center gap-4">
-                <span class="text-sm text-gray-400">{{ proposal.likes }} 👍</span>
-                <span class="text-sm text-gray-400">{{ proposal.dislikes }} 👎</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Voting buttons -->
+        <!-- Voting section -->
         <div class="flex justify-between">
           <button 
             @click="likeProposal(proposal.index)" 
-            class="bg-green-600 rounded px-4 py-2 text-white"
+            class="bg-slate-900 rounded px-4 py-2 text-white"
           >
-            Głosuj Za
+            Approve {{ proposal.likes }}
           </button>
+          <span class="text-lg text-center items-center">{{ proposal.name }} ({{ proposal.shortcut }})</span>
           <button 
             @click="dislikeProposal(proposal.index)" 
-            class="bg-red-600 rounded px-4 py-2 text-white"
+            class="bg-slate-900 rounded px-4 py-2 text-white"
           >
-            Głosuj Przeciw
+            Reject {{ proposal.dislikes }}
           </button>
         </div>
       </div>
@@ -83,13 +65,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { konkursss_backend } from 'declarations/konkursss_backend/index';
-import { userStore } from '../store'; // upewnij się, że ścieżka jest poprawna
-
-const userId = ref('');
+import { userStore } from '../store';
 
 // State for new cryptocurrency proposal
 const newProposal = ref({
-  icon: '',
   shortcut: '',
   name: ''
 });
@@ -109,14 +88,13 @@ const fetchProposals = async () => {
 
 // Add a new proposal
 const addProposal = async () => {
-  const { icon, shortcut, name } = newProposal.value;
-  if (!icon.trim() || !shortcut.trim() || !name.trim()) {
+  const {shortcut, name } = newProposal.value;
+  if (!shortcut.trim() || !name.trim()) {
     return;
   }
 
   try {
     await konkursss_backend.propose_crypto({
-      icon,
       shortcut,
       name,
       proposer: userStore.username,
@@ -124,7 +102,7 @@ const addProposal = async () => {
       dislikes: 0
     });
     // Clear input fields after submission
-    newProposal.value = { icon: '', shortcut: '', name: '' };
+    newProposal.value = {shortcut: '', name: '' };
     await fetchProposals(); // Refresh the list
   } catch (error) {
     console.error('Failed to add proposal:', error);

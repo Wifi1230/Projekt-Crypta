@@ -7,7 +7,6 @@ use candid::{CandidType, Deserialize};
 struct CryptoEntry {
     name: String,
     shortcut: String,
-    icon: String,
 }
 
 #[derive(Clone, CandidType, Deserialize, Default)]
@@ -40,7 +39,6 @@ struct Comment {
 struct CryptoProposal {
     name: String,
     shortcut: String,
-    icon: String,
     proposer: String,
     likes: u32,
     dislikes: u32,
@@ -53,7 +51,6 @@ struct UserVotes {
     disliked: HashSet<String>,
 }
 
-// Przechowywanie komentarzy dla każdego wpisu
 thread_local! {
     static WPISY: RefCell<Vec<WpisAll>> = RefCell::default();
     static KRYPTO: RefCell<Vec<CryptoEntry>> = RefCell::new(Vec::new());
@@ -167,6 +164,15 @@ fn add_crypto(entry: CryptoEntry) {
     });
 }
 
+#[ic_cdk::update]
+fn usun_krypto(index: usize) {
+    KRYPTO.with(|crypto| {
+        if index < crypto.borrow().len() {
+            crypto.borrow_mut().remove(index);
+        }
+    });
+}
+
 #[ic_cdk::query]
 fn get_all_cryptos() -> Vec<CryptoEntry> {
     KRYPTO.with(|crypto| {
@@ -195,12 +201,106 @@ fn get_all_accounts() -> Vec<AccEntry> {
         accounts.borrow().clone()
     })
 }
+// Funkcja do usuwania konta
+#[ic_cdk::update]
+fn delete_account(username: String) -> Result<(), String> {
+    // Remove the account
+    ACCOUNTS.with(|accounts| {
+        let mut accounts = accounts.borrow_mut();
+        if let Some(pos) = accounts.iter().position(|acc| acc.username == username) {
+            // Remove account from the list
+            accounts.remove(pos);
+            
+            // Remove related posts, comments, votes, and proposals
+            WPISY.with(|wpisy| {
+                let mut wpisy = wpisy.borrow_mut();
+                wpisy.retain(|wpis| wpis.username != username);
+            });
+            
+            COMMENTS.with(|comments| {
+                let mut comments = comments.borrow_mut();
+                // Remove comments by the user
+                for comment_list in comments.values_mut() {
+                    comment_list.retain(|comment| comment.username != username);
+                }
+            });
+            
+            VOTES.with(|votes| {
+                let mut votes = votes.borrow_mut();
+                // Remove votes by the user
+                for (_, user_votes) in votes.iter_mut() {
+                    user_votes.liked.remove(&username);
+                    user_votes.disliked.remove(&username);
+                }
+            });
+            
+            COMMENT_VOTES.with(|comment_votes| {
+                let mut comment_votes = comment_votes.borrow_mut();
+                // Remove comment votes by the user
+                for (_, user_votes) in comment_votes.iter_mut() {
+                    user_votes.liked.remove(&username);
+                    user_votes.disliked.remove(&username);
+                }
+            });
+            
+            PROPOSAL_VOTES.with(|proposal_votes| {
+                let mut proposal_votes = proposal_votes.borrow_mut();
+                // Remove proposal votes by the user
+                for (_, user_votes) in proposal_votes.iter_mut() {
+                    user_votes.liked.remove(&username);
+                    user_votes.disliked.remove(&username);
+                }
+            });
+
+            // Remove proposals made by the user
+            PROPOSALS.with(|proposals| {
+                let mut proposals = proposals.borrow_mut();
+                proposals.retain(|proposal| proposal.proposer != username);
+            });
+
+            Ok(())
+        } else {
+            Err("Account not found".to_string())
+        }
+    })
+}
 
 // Dodawanie komentarza
 #[ic_cdk::update]
 fn dodaj_komentarz(wpis_index: usize, comment: Comment) {
     COMMENTS.with(|comments| {
         comments.borrow_mut().entry(wpis_index).or_default().push(comment);
+    });
+}
+
+// Usuwanie komentarza
+#[ic_cdk::update]
+fn usun_komentarz(wpis_index: usize, comment_index: usize) {
+    COMMENTS.with(|comments| {
+        if let Some(comment_list) = comments.borrow_mut().get_mut(&wpis_index) {
+            if comment_index < comment_list.len() {
+                comment_list.remove(comment_index);
+
+                // Clean up votes for the removed comment
+                COMMENT_VOTES.with(|votes| {
+                    votes.borrow_mut().remove(&(wpis_index, comment_index));
+                    
+                    // Adjust indices for subsequent comments
+                    let keys_to_adjust: Vec<_> = votes
+                        .borrow()
+                        .keys()
+                        .filter(|&&(wi, ci)| wi == wpis_index && ci > comment_index)
+                        .cloned()
+                        .collect();
+
+                    for key in keys_to_adjust {
+                        if let Some(entry) = votes.borrow_mut().remove(&key) {
+                            votes.borrow_mut().insert((key.0, key.1 - 1), entry);
+                        }
+                    }
+                });
+            }
+        }
     });
 }
 
@@ -212,7 +312,7 @@ fn odczytaj_komentarze(wpis_index: usize) -> Vec<Comment> {
     })
 }
 
-// Lubię to dla komentarza
+// Like dla komentarza
 #[ic_cdk::update]
 fn like_comment(user_id: String, wpis_index: usize, comment_index: usize) {
     COMMENTS.with(|comments| {
@@ -240,7 +340,7 @@ fn like_comment(user_id: String, wpis_index: usize, comment_index: usize) {
     });
 }
 
-// Nie lubię dla komentarza
+// disLike dla komentarza
 #[ic_cdk::update]
 fn dislike_comment(user_id: String, wpis_index: usize, comment_index: usize) {
     COMMENTS.with(|comments| {
@@ -292,6 +392,35 @@ fn propose_crypto(proposal: CryptoProposal) {
     });
 }
 
+// Usuwanie propozycji
+#[ic_cdk::update]
+fn usun_propozycje(proposal_index: usize) {
+    PROPOSALS.with(|proposals| {
+        if proposal_index < proposals.borrow().len() {
+            proposals.borrow_mut().remove(proposal_index);
+
+            // Remove any votes associated with the proposal
+            PROPOSAL_VOTES.with(|votes| {
+                votes.borrow_mut().remove(&proposal_index);
+
+                // Adjust indices for subsequent proposals
+                let keys_to_adjust: Vec<_> = votes
+                    .borrow()
+                    .keys()
+                    .filter(|&&pi| pi > proposal_index)
+                    .cloned()
+                    .collect();
+
+                for key in keys_to_adjust {
+                    if let Some(entry) = votes.borrow_mut().remove(&key) {
+                        votes.borrow_mut().insert(key - 1, entry);
+                    }
+                }
+            });
+        }
+    });
+}
+
 // Odczytywanie wszystkich propozycji
 #[ic_cdk::query]
 fn get_all_proposals() -> Vec<CryptoProposal> {
@@ -300,7 +429,7 @@ fn get_all_proposals() -> Vec<CryptoProposal> {
     })
 }
 
-// Lubię to dla propozycji
+// Like dla propozycji
 #[ic_cdk::update]
 fn like_proposal(user_id: String, proposal_index: usize) {
     PROPOSALS.with(|proposals| {
@@ -330,7 +459,6 @@ fn like_proposal(user_id: String, proposal_index: usize) {
                 add_crypto(CryptoEntry {
                     name: proposal.name.clone(),
                     shortcut: proposal.shortcut.clone(),
-                    icon: proposal.icon.clone(),
                 });
                 proposals_mut.remove(proposal_index);
             }
@@ -378,10 +506,11 @@ fn user_has_liked_proposal(user_id: String, proposal_index: usize) -> bool {
     })
 }
 
-// Sprawdzanie, czy użytkownik nie polubił propozycji
+// Sprawdzanie, czy użytkownik dissliked propozycji
 #[ic_cdk::query]
 fn user_has_disliked_proposal(user_id: String, proposal_index: usize) -> bool {
     PROPOSAL_VOTES.with(|v| {
         v.borrow().get(&proposal_index).map_or(false, |votes| votes.disliked.contains(&user_id))
     })
 }
+

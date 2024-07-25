@@ -5,11 +5,7 @@ export const idlFactory = ({ IDL }) => {
     'email' : IDL.Text,
   });
   const Result = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Text });
-  const CryptoEntry = IDL.Record({
-    'icon' : IDL.Text,
-    'name' : IDL.Text,
-    'shortcut' : IDL.Text,
-  });
+  const CryptoEntry = IDL.Record({ 'name' : IDL.Text, 'shortcut' : IDL.Text });
   const Comment = IDL.Record({
     'username' : IDL.Text,
     'text' : IDL.Text,
@@ -26,7 +22,6 @@ export const idlFactory = ({ IDL }) => {
     'dislikes' : IDL.Nat32,
   });
   const CryptoProposal = IDL.Record({
-    'icon' : IDL.Text,
     'name' : IDL.Text,
     'likes' : IDL.Nat32,
     'proposer' : IDL.Text,
@@ -36,6 +31,7 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     'add_account' : IDL.Func([AccEntry], [Result], []),
     'add_crypto' : IDL.Func([CryptoEntry], [], []),
+    'delete_account' : IDL.Func([IDL.Text], [Result], []),
     'dislike_comment' : IDL.Func([IDL.Text, IDL.Nat64, IDL.Nat64], [], []),
     'dislike_proposal' : IDL.Func([IDL.Text, IDL.Nat64], [], []),
     'dislike_wpis' : IDL.Func([IDL.Text, IDL.Nat64], [], []),
@@ -81,6 +77,9 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Bool],
         ['query'],
       ),
+    'usun_komentarz' : IDL.Func([IDL.Nat64, IDL.Nat64], [], []),
+    'usun_krypto' : IDL.Func([IDL.Nat64], [], []),
+    'usun_propozycje' : IDL.Func([IDL.Nat64], [], []),
     'usun_wpis' : IDL.Func([IDL.Nat64], [], []),
   });
 };

@@ -14,13 +14,8 @@ export interface Comment {
   'wpis_index' : bigint,
   'dislikes' : number,
 }
-export interface CryptoEntry {
-  'icon' : string,
-  'name' : string,
-  'shortcut' : string,
-}
+export interface CryptoEntry { 'name' : string, 'shortcut' : string }
 export interface CryptoProposal {
-  'icon' : string,
   'name' : string,
   'likes' : number,
   'proposer' : string,
@@ -40,6 +35,7 @@ export interface WpisAll {
 export interface _SERVICE {
   'add_account' : ActorMethod<[AccEntry], Result>,
   'add_crypto' : ActorMethod<[CryptoEntry], undefined>,
+  'delete_account' : ActorMethod<[string], Result>,
   'dislike_comment' : ActorMethod<[string, bigint, bigint], undefined>,
   'dislike_proposal' : ActorMethod<[string, bigint], undefined>,
   'dislike_wpis' : ActorMethod<[string, bigint], undefined>,
@@ -61,6 +57,9 @@ export interface _SERVICE {
   'user_has_liked' : ActorMethod<[string, bigint], boolean>,
   'user_has_liked_comment' : ActorMethod<[string, bigint, bigint], boolean>,
   'user_has_liked_proposal' : ActorMethod<[string, bigint], boolean>,
+  'usun_komentarz' : ActorMethod<[bigint, bigint], undefined>,
+  'usun_krypto' : ActorMethod<[bigint], undefined>,
+  'usun_propozycje' : ActorMethod<[bigint], undefined>,
   'usun_wpis' : ActorMethod<[bigint], undefined>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;

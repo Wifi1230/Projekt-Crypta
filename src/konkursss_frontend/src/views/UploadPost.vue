@@ -20,7 +20,7 @@
       <textarea 
         v-model="postText"
         class="w-full p-4 bg-gray-700 border border-gray-600 rounded-lg text-white h-40"
-        placeholder="Napisz coś..."
+        placeholder="Write something..."
       ></textarea>
       <button 
         @click="submitPost" 
@@ -36,7 +36,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { konkursss_backend } from 'declarations/konkursss_backend/index';
-import { userStore } from '../store'; // upewnij się, że ścieżka jest poprawna
+import { userStore } from '../store';
 
 const router = useRouter();
 const postText = ref('');
@@ -61,7 +61,7 @@ const submitPost = async () => {
       prediction: prediction.value,
       likes: 0,
       dislikes: 0,
-      username: userStore.username // Dodajemy nazwę użytkownika
+      username: userStore.username
     };
 
     const response = await konkursss_backend.dodaj_wpis(postData);

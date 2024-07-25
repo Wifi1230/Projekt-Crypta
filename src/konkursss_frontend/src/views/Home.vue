@@ -28,11 +28,11 @@
                 <button class="bg-red-600 rounded text-white px-4 py-2" @click="deleteWpis(index)">Usuń</button>
                 <div class="flex items-center space-x-4">
                   <div class="flex items-center">
-                    <img src="/like.png" alt="Like" class="w-6 h-6 cursor-pointer transition-transform transform hover:scale-110" @click="likePost(index)">
+                    <p class="w-6 h-6 cursor-pointer transition-transform transform hover:scale-110" @click="likePost(index)">👍</p>
                     <span class="ml-2 text-white">{{ wpis.likes }}</span>
                   </div>
                   <div class="flex items-center">
-                    <img src="/dislike.png" alt="Dislike" class="w-6 h-6 cursor-pointer transition-transform transform hover:scale-110" @click="dislikePost(index)">
+                    <p class="w-6 h-6 cursor-pointer transition-transform transform hover:scale-110" @click="dislikePost(index)">👎</p>
                     <span class="ml-2 text-white">{{ wpis.dislikes }}</span>
                   </div>
                   <div class="flex items-center">
@@ -49,9 +49,9 @@
                 <div v-for="(comment, commentIndex) in wpis.comments" :key="comment.id" class="mb-2 p-2 bg-gray-700 border border-slate-900 rounded">
                   <p class="text-white"><strong>{{ comment.username }}:</strong> {{ comment.text }}</p>
                   <div class="flex items-center">
-                    <img src="/like.png" alt="Like" class="w-4 h-4 cursor-pointer transition-transform transform hover:scale-110" @click="likeComment(index, commentIndex)">
+                    <p class="w-6 h-6 cursor-pointer transition-transform transform hover:scale-110" @click="likeComment(index, commentIndex)">👍</p>
                     <span class="ml-1 text-white">{{ comment.likes }}</span>
-                    <img src="/dislike.png" alt="Dislike" class="w-4 h-4 ml-2 cursor-pointer transition-transform transform hover:scale-110" @click="dislikeComment(index, commentIndex)">
+                    <p class="w-6 h-6 cursor-pointer transition-transform transform hover:scale-110" @click="dislikeComment(index, commentIndex)">👎</p>
                     <span class="ml-1 text-white">{{ comment.dislikes }}</span>
                   </div>
                 </div>
@@ -67,15 +67,14 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { konkursss_backend } from 'declarations/konkursss_backend/index';
-import { userStore } from '../store'; // upewnij się, że ścieżka jest poprawna
+import { userStore } from '../store'; 
 
 
 const props = defineProps(['selectedCrypto']);
-const userId = ref(''); // Load the user ID appropriately
 
 const wpisy = ref([]);
 const filteredWpisy = ref([]);
-const newCommentText = ref([]); // To hold the new comment text for each post
+const newCommentText = ref([]); 
 
 // Fetch posts from backend
 const pobierzWpisy = async () => {
@@ -84,8 +83,11 @@ const pobierzWpisy = async () => {
     ...wpis,
     showComments: false,
     comments: [],
-    index: BigInt(index), // Ensure the index is a BigInt for compatibility
+    index
   }));
+
+  // Sort wpisy by index in descending order
+  wpisy.value.sort((a, b) => b.index - a.index);
 
   await Promise.all(wpisy.value.map(async (wpis, index) => {
     const comments = await konkursss_backend.odczytaj_komentarze(wpis.index);

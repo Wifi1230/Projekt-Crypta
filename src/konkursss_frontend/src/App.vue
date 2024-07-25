@@ -33,7 +33,6 @@
       <div v-if="showCryptocurrencies" class="width15 bg-gray-800 overflow-y-auto max-h-[9rem] z-50 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800">
         <ul class="text-sm text-white">
           <li v-for="crypto in filteredCryptocurrencies" :key="crypto.id" @click="selectCrypto(crypto)" class="flex items-center h-10 px-4 cursor-pointer">
-            <img :src="crypto.icon" alt="Cryptocurrency" class="h-8 mr-2">
             <p>{{ crypto.shortcut }} {{ crypto.name }}</p>
           </li>
         </ul>
@@ -48,7 +47,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { konkursss_backend } from 'declarations/konkursss_backend/index';
-import { userStore } from './store'; // upewnij się, że ścieżka jest poprawna
+import { userStore } from './store';
 
 const cryptocurrencies = ref([]);
 const filteredCryptocurrencies = ref([]);

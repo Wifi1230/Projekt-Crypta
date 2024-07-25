@@ -20,7 +20,7 @@
 
       <div v-if="error" class="text-sm text-red-500 mt-2 text-center">{{ error }}</div>
       <div class="text-sm text-gray-400 mt-2 text-center">
-        Nie masz konta? <router-link to="/rejestracja" class="underline hover:text-gray-300">Zarejestruj się</router-link>
+        Don't have account? <router-link to="/rejestracja" class="underline hover:text-gray-300">Register</router-link>
       </div>
     </div>
   </div>
@@ -30,7 +30,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { konkursss_backend } from 'declarations/konkursss_backend/index';
-import { userStore } from '../store'; // importuj globalny stan użytkownika
+import { userStore } from '../store';
 
 const router = useRouter();
 const username = ref('');
@@ -43,7 +43,7 @@ const login = async () => {
     const user = accounts.find(account => account.username === username.value && account.password === password.value);
 
     if (user) {
-      userStore.setUsername(user.username); // ustaw globalny stan użytkownika
+      userStore.setUsername(user.username);
       router.push('/');
     } else {
       error.value = 'Invalid username or password';

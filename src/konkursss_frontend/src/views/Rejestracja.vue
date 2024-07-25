@@ -1,7 +1,7 @@
 <template>
   <div class="bg-slate-900 h-screen flex flex-col items-center justify-center">
     <!-- Nagłówek Rejestracja -->
-    <h1 class="text-3xl font-semibold text-white mt-8">Rejestracja</h1>
+    <h1 class="text-3xl font-semibold text-white mt-8">Register</h1>
     
     <!-- Formularz rejestracji -->
     <div class="max-w-md w-full mx-auto p-8 bg-gray-700 border border-gray-900 rounded-lg shadow-lg">
@@ -37,7 +37,7 @@
   
       <!-- Link do logowania -->
       <div class="text-sm text-gray-400 mt-2 text-center">
-        Masz już konto? <router-link to="/login" class="underline hover:text-gray-300">Zaloguj się</router-link>
+        You have account? <router-link to="/login" class="underline hover:text-gray-300">Log in</router-link>
       </div>
     </div>
   </div>
@@ -62,16 +62,11 @@ const sendDatatoBack = async () => {
       email: email.value,
       password: password.value
     };
-
-    // Wywołanie metody backendowej (zakładając, że jest dostępna jako globalna)
     const response = await konkursss_backend.add_account(userData);
 
-    // Sprawdzenie, czy odpowiedź zawiera błąd
     if (response.Ok !== undefined) {
-      // Rejestracja udana, przekierowanie do strony logowania
       router.push('/login');
     } else if (response.Err !== undefined) {
-      // Wyświetlenie wiadomości o błędzie
       errorMessage.value = response.Err;
     }
   } catch (error) {
