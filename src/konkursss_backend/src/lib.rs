@@ -304,7 +304,8 @@ fn get_all_proposals() -> Vec<CryptoProposal> {
 #[ic_cdk::update]
 fn like_proposal(user_id: String, proposal_index: usize) {
     PROPOSALS.with(|proposals| {
-        if let Some(proposal) = proposals.borrow_mut().get_mut(proposal_index) {
+        let mut proposals_mut = proposals.borrow_mut();
+        if let Some(proposal) = proposals_mut.get_mut(proposal_index) {
             let mut votes = PROPOSAL_VOTES.with(|v| v.borrow_mut().entry(proposal_index).or_default().clone());
 
             if votes.liked.contains(&user_id) {
@@ -331,7 +332,7 @@ fn like_proposal(user_id: String, proposal_index: usize) {
                     shortcut: proposal.shortcut.clone(),
                     icon: proposal.icon.clone(),
                 });
-                proposals.borrow_mut().remove(proposal_index);
+                proposals_mut.remove(proposal_index);
             }
         }
     });
@@ -340,7 +341,8 @@ fn like_proposal(user_id: String, proposal_index: usize) {
 #[ic_cdk::update]
 fn dislike_proposal(user_id: String, proposal_index: usize) {
     PROPOSALS.with(|proposals| {
-        if let Some(proposal) = proposals.borrow_mut().get_mut(proposal_index) {
+        let mut proposals_mut = proposals.borrow_mut();
+        if let Some(proposal) = proposals_mut.get_mut(proposal_index) {
             let mut votes = PROPOSAL_VOTES.with(|v| v.borrow_mut().entry(proposal_index).or_default().clone());
 
             if votes.disliked.contains(&user_id) {
@@ -362,7 +364,7 @@ fn dislike_proposal(user_id: String, proposal_index: usize) {
             // Check if the proposal has enough dislikes to be rejected
             if proposal.dislikes >= 5 {
                 // Remove the proposal
-                proposals.borrow_mut().remove(proposal_index);
+                proposals_mut.remove(proposal_index);
             }
         }
     });
