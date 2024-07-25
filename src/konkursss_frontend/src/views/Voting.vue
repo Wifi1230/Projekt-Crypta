@@ -28,7 +28,7 @@
       </div>
       <button 
         @click="addProposal" 
-        class="mt-4 bg-blue-600 rounded px-4 py-2 text-white w-full"
+        class="mt-4 bg-gray-700 rounded px-4 py-2 text-white w-full"
       >
         Dodaj Propozycję
       </button>
@@ -39,10 +39,11 @@
       Brak propozycji do wyświetlenia.
     </div>
     <div v-else>
+      <div class="grid grid-cols-2">
       <div 
         v-for="proposal in proposals" 
         :key="proposal.index"
-        class="bg-gray-700 p-4 mb-4 rounded drop-shadow-xl"
+        class="bg-gray-700 p-4 m-2 rounded drop-shadow-xl"
       >
         <div class="flex items-center mb-4">
           <!-- Display proposal details -->
@@ -74,6 +75,7 @@
         </div>
       </div>
     </div>
+  </div>
   </div>
   </div>
 </template>
@@ -129,12 +131,12 @@ const addProposal = async () => {
   }
 };
 const userHasLiked = async (poroposalId) => {
-  return await konkursss_backend.user_has_liked_proposal(userId.value, poroposalId);
+  return await konkursss_backend.user_has_liked_proposal(userStore.username, poroposalId);
 };
 
 // Check if user has disliked a post
 const userHasDisliked = async (poroposalId) => {
-  return await konkursss_backend.user_has_disliked_proposal(userId.value, poroposalId);
+  return await konkursss_backend.user_has_disliked_proposal(userStore.username, poroposalId);
 };
 
 
@@ -146,13 +148,13 @@ const likeProposal = async (index) => {
   const hasDisliked = await userHasDisliked(poroposalId);
   
   if (hasLiked) {
-      await konkursss_backend.like_proposal(userId.value, poroposalId);
+      await konkursss_backend.like_proposal(userStore.username, poroposalId);
     } else {
       // If the user disliked the post, remove the dislike and add a like
       if (hasDisliked) {
-        await konkursss_backend.dislike_proposal(userId.value, poroposalId);
+        await konkursss_backend.dislike_proposal(userStore.username, poroposalId);
       }
-      await konkursss_backend.like_proposal(userId.value, poroposalId);
+      await konkursss_backend.like_proposal(userStore.username, poroposalId);
     }
     await fetchProposals();
   } catch (error) {
@@ -168,13 +170,13 @@ const dislikeProposal = async (index) => {
   const hasDisliked = await userHasDisliked(poroposalId);
   
   if (hasDisliked) {
-      await konkursss_backend.dislike_proposal(userId.value, poroposalId);
+      await konkursss_backend.dislike_proposal(userStore.username, poroposalId);
     } else {
       // If the user disliked the post, remove the dislike and add a like
       if (hasLiked) {
-        await konkursss_backend.like_proposal(userId.value, poroposalId);
+        await konkursss_backend.like_proposal(userStore.username, poroposalId);
       }
-      await konkursss_backend.dislike_proposal(userId.value, poroposalId);
+      await konkursss_backend.dislike_proposal(userStore.username, poroposalId);
     }
     await fetchProposals();
   } catch (error) {

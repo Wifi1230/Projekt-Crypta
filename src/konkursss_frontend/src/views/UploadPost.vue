@@ -24,7 +24,7 @@
       ></textarea>
       <button 
         @click="submitPost" 
-        class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        class="mt-4 px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-blue-700"
       >
         Submit Post
       </button>

@@ -106,12 +106,12 @@ const filterPostsByCrypto = () => {
 
 // Check if user has liked a post
 const userHasLiked = async (postId) => {
-  return await konkursss_backend.user_has_liked(userId.value, postId);
+  return await konkursss_backend.user_has_liked(userStore.username, postId);
 };
 
 // Check if user has disliked a post
 const userHasDisliked = async (postId) => {
-  return await konkursss_backend.user_has_disliked(userId.value, postId);
+  return await konkursss_backend.user_has_disliked(userStore.username, postId);
 };
 
 // Handle liking a post
@@ -123,13 +123,13 @@ const likePost = async (index) => {
 
     if (hasLiked) {
       // If the user already liked the post, remove the like
-      await konkursss_backend.like_wpis(userId.value, postId);
+      await konkursss_backend.like_wpis(userStore.username, postId);
     } else {
       // If the user disliked the post, remove the dislike and add a like
       if (hasDisliked) {
-        await konkursss_backend.dislike_wpis(userId.value, postId);
+        await konkursss_backend.dislike_wpis(userStore.username, postId);
       }
-      await konkursss_backend.like_wpis(userId.value, postId);
+      await konkursss_backend.like_wpis(userStore.username, postId);
     }
 
     await pobierzWpisy();
@@ -147,13 +147,13 @@ const dislikePost = async (index) => {
 
     if (hasDisliked) {
       // If the user already disliked the post, remove the dislike
-      await konkursss_backend.dislike_wpis(userId.value, postId);
+      await konkursss_backend.dislike_wpis(userStore.username, postId);
     } else {
       // If the user liked the post, remove the like and add a dislike
       if (hasLiked) {
-        await konkursss_backend.like_wpis(userId.value, postId);
+        await konkursss_backend.like_wpis(userStore.username, postId);
       }
-      await konkursss_backend.dislike_wpis(userId.value, postId);
+      await konkursss_backend.dislike_wpis(userStore.username, postId);
     }
 
     await pobierzWpisy();
@@ -199,12 +199,12 @@ const addComment = async (postIndex) => {
 
 // Check if user has liked a comment
 const userHasLikedComment = async (postId, commentId) => {
-  return await konkursss_backend.user_has_liked_comment(userId.value, postId, commentId);
+  return await konkursss_backend.user_has_liked_comment(userStore.username, postId, commentId);
 };
 
 // Check if user has disliked a comment
 const userHasDislikedComment = async (postId, commentId) => {
-  return await konkursss_backend.user_has_disliked_comment(userId.value, postId, commentId);
+  return await konkursss_backend.user_has_disliked_comment(userStore.username, postId, commentId);
 };
 
 // Handle liking a comment
@@ -217,13 +217,13 @@ const likeComment = async (postIndex, commentIndex) => {
 
     if (hasLiked) {
       // If the user already liked the comment, remove the like
-      await konkursss_backend.like_comment(userId.value, postId, commentId);
+      await konkursss_backend.like_comment(userStore.username, postId, commentId);
     } else {
       // If the user disliked the comment, remove the dislike and add a like
       if (hasDisliked) {
-        await konkursss_backend.dislike_comment(userId.value, postId, commentId);
+        await konkursss_backend.dislike_comment(userStore.username, postId, commentId);
       }
-      await konkursss_backend.like_comment(userId.value, postId, commentId);
+      await konkursss_backend.like_comment(userStore.username, postId, commentId);
     }
 
     await pobierzWpisy();
@@ -242,13 +242,13 @@ const dislikeComment = async (postIndex, commentIndex) => {
 
     if (hasDisliked) {
       // If the user already disliked the comment, remove the dislike
-      await konkursss_backend.dislike_comment(userId.value, postId, commentId);
+      await konkursss_backend.dislike_comment(userStore.username, postId, commentId);
     } else {
       // If the user liked the comment, remove the like and add a dislike
       if (hasLiked) {
-        await konkursss_backend.like_comment(userId.value, postId, commentId);
+        await konkursss_backend.like_comment(userStore.username, postId, commentId);
       }
-      await konkursss_backend.dislike_comment(userId.value, postId, commentId);
+      await konkursss_backend.dislike_comment(userStore.username, postId, commentId);
     }
 
     await pobierzWpisy();
