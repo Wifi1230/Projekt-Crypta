@@ -1,8 +1,10 @@
 <template>
   <div class="bg-slate-900 min-h-screen h-full overflow-hidden text-white flex flex-col">
     <div class="custom-height"></div>
-
     <div class="w-2/3 mx-auto p-4">
+      <div class="text-white w-full text-center items-center">
+      <p>If proposal have 5 approval votes then it adds to cryptocurrencies but if have 5 votes against then proposal is deleted</p>
+    </div>
     <!-- Section for adding new cryptocurrency proposal -->
     <div class="my-8">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -24,6 +24,10 @@
             class="mt-1 block w-full px-3 py-2 rounded-md bg-gray-800 text-white focus:outline-none focus:ring focus:ring-gray-400"
             required>
         </div>
+        <div class="flex items-center">
+        <input type="checkbox" id="terms" name="terms" required class="h-4 w-4 text-slate-900 border-gray-600 rounded focus:ring-slate-900 checked:bg-slate-900 checked:border-slate-900 focus:ring-2">
+        <label for="terms" class="ml-2 text-sm text-white">I agree to the terms and conditions</label>
+         </div>
         <button type="submit"
           class="w-full px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 focus:outline-none focus:ring focus:ring-gray-400">
           Register

@@ -7,6 +7,7 @@
           <div class="text-white grid gap-4 my-10">
             <!-- Display posts -->
             <div v-for="(wpis, index) in filteredWpisy" :key="index" class="post drop-shadow-xl bg-gray-700 p-4 relative rounded-lg">
+              <div class="flex flex-col mb-2">
               <div class="flex items-start mb-2">
                 <div class="text-sm text-gray-400 mr-4">
                   <span class="block">{{ wpis.username }}</span>
@@ -22,11 +23,10 @@
                     {{ wpis.prediction }}
                   </span>
                 </div>
-                <p class="text-white">{{ wpis.post_text }}</p>
-              </div>
-              <div class="flex justify-between items-center mt-4">
-                <button class="bg-red-600 rounded text-white px-4 py-2" @click="deleteWpis(index)">Usuń</button>
-                <div class="flex items-center space-x-4">
+                <div class="flex-1">
+                  <p class="text-white">{{ wpis.post_text }}</p>
+                </div>
+                <div class="flex items-center ml-4 space-x-4">
                   <div class="flex items-center">
                     <p class="w-6 h-6 cursor-pointer transition-transform transform hover:scale-110" @click="likePost(index)">👍</p>
                     <span class="ml-2 text-white">{{ wpis.likes }}</span>
@@ -40,11 +40,12 @@
                   </div>
                 </div>
               </div>
+            </div>
               <!-- Comments Section -->
               <div v-if="wpis.showComments" class="mt-4">
                 <div class="flex items-start mb-2">
-                  <textarea v-model="newCommentText[index]" class="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white" placeholder="Dodaj komentarz..."></textarea>
-                  <button @click="addComment(index)" class="bg-blue-600 text-white rounded px-4 py-2 ml-2">Dodaj</button>
+                  <textarea v-model="newCommentText[index]" class="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white" placeholder="Add comment..."></textarea>
+                  <button @click="addComment(index)" class="bg-slate-900 text-white rounded px-4 py-2 ml-2">Add</button>
                 </div>
                 <div v-for="(comment, commentIndex) in wpis.comments" :key="comment.id" class="mb-2 p-2 bg-gray-700 border border-slate-900 rounded">
                   <p class="text-white"><strong>{{ comment.username }}:</strong> {{ comment.text }}</p>
@@ -83,11 +84,8 @@ const pobierzWpisy = async () => {
     ...wpis,
     showComments: false,
     comments: [],
-    index
+    index: BigInt(index), // Ensure the index is a BigInt for compatibility
   }));
-
-  // Sort wpisy by index in descending order
-  wpisy.value.sort((a, b) => b.index - a.index);
 
   await Promise.all(wpisy.value.map(async (wpis, index) => {
     const comments = await konkursss_backend.odczytaj_komentarze(wpis.index);
