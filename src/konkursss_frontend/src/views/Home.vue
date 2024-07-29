@@ -84,8 +84,9 @@ const pobierzWpisy = async () => {
     ...wpis,
     showComments: false,
     comments: [],
-    index: BigInt(index), // Ensure the index is a BigInt for compatibility
+    index // Ensure the index is a BigInt for compatibility
   }));
+  wpisy.value.sort((a, b) => b.index - a.index);
 
   await Promise.all(wpisy.value.map(async (wpis, index) => {
     const comments = await konkursss_backend.odczytaj_komentarze(wpis.index);
@@ -117,7 +118,9 @@ const userHasDisliked = async (postId) => {
 // Handle liking a post
 const likePost = async (index) => {
   try {
-    const postId = BigInt(index);
+    const totalPosts = wpisy.value.length;
+    const reversedIndex = totalPosts - 1 - index;
+    const postId = BigInt(reversedIndex);
     const hasLiked = await userHasLiked(postId);
     const hasDisliked = await userHasDisliked(postId);
 
@@ -141,7 +144,9 @@ const likePost = async (index) => {
 // Handle disliking a post
 const dislikePost = async (index) => {
   try {
-    const postId = BigInt(index);
+    const totalPosts = wpisy.value.length;
+    const reversedIndex = totalPosts - 1 - index;
+    const postId = BigInt(reversedIndex);
     const hasLiked = await userHasLiked(postId);
     const hasDisliked = await userHasDisliked(postId);
 
@@ -170,7 +175,9 @@ const toggleComments = (index) => {
 // Add a new comment to a post
 const addComment = async (postIndex) => {
   try {
-    const postId = BigInt(postIndex);
+    const totalPosts = wpisy.value.length;
+    const reversedIndex = totalPosts - 1 - postIndex;
+    const postId = BigInt(reversedIndex);
     const commentText = newCommentText.value[postIndex];
     
     if (commentText.trim() === '') {
@@ -210,7 +217,9 @@ const userHasDislikedComment = async (postId, commentId) => {
 // Handle liking a comment
 const likeComment = async (postIndex, commentIndex) => {
   try {
-    const postId = BigInt(postIndex);
+    const totalPosts = wpisy.value.length;
+    const reversedIndex = totalPosts - 1 - postIndex;
+    const postId = BigInt(reversedIndex);
     const commentId = BigInt(commentIndex);
     const hasLiked = await userHasLikedComment(postId, commentId);
     const hasDisliked = await userHasDislikedComment(postId, commentId);
@@ -235,7 +244,9 @@ const likeComment = async (postIndex, commentIndex) => {
 // Handle disliking a comment
 const dislikeComment = async (postIndex, commentIndex) => {
   try {
-    const postId = BigInt(postIndex);
+    const totalPosts = wpisy.value.length;
+    const reversedIndex = totalPosts - 1 - postIndex;
+    const postId = BigInt(reversedIndex);
     const commentId = BigInt(commentIndex);
     const hasLiked = await userHasLikedComment(postId, commentId);
     const hasDisliked = await userHasDislikedComment(postId, commentId);

@@ -403,14 +403,15 @@ fn usun_propozycje(proposal_index: usize) {
             PROPOSAL_VOTES.with(|votes| {
                 votes.borrow_mut().remove(&proposal_index);
 
-                // Adjust indices for subsequent proposals
-                let keys_to_adjust: Vec<_> = votes
-                    .borrow()
-                    .keys()
-                    .filter(|&&pi| pi > proposal_index)
-                    .cloned()
-                    .collect();
+                // Collect keys to adjust before modifying the map
+                let mut keys_to_adjust = Vec::new();
+                for (key, _) in votes.borrow().iter() {
+                    if *key > proposal_index {
+                        keys_to_adjust.push(*key);
+                    }
+                }
 
+                // Adjust indices for subsequent proposals
                 for key in keys_to_adjust {
                     if let Some(entry) = votes.borrow_mut().remove(&key) {
                         votes.borrow_mut().insert(key - 1, entry);
