@@ -1,9 +1,9 @@
 <template>
   <div class="bg-slate-900 h-screen flex flex-col items-center justify-center">
-    <!-- Nagłówek Rejestracja -->
+
     <h1 class="text-3xl font-semibold text-white mt-8">Register</h1>
     
-    <!-- Formularz rejestracji -->
+
     <div class="max-w-md w-full mx-auto p-8 bg-gray-700 border border-gray-900 rounded-lg shadow-lg">
       <form @submit.prevent="sendDatatoBack" class="space-y-4">
         <div>
@@ -34,12 +34,12 @@
         </button>
       </form>
 
-      <!-- Wiadomość o błędzie -->
+
       <div v-if="errorMessage" class="mt-4 text-red-500 text-center">
         {{ errorMessage }}
       </div>
   
-      <!-- Link do logowania -->
+
       <div class="text-sm text-gray-400 mt-2 text-center">
         You have account? <router-link to="/login" class="underline hover:text-gray-300">Log in</router-link>
       </div>
@@ -81,13 +81,13 @@ const sendDatatoBack = async () => {
 </script>
 
 <style scoped>
-/* Dodatkowy styl dla przycisku Register */
+
 button {
   transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #4a5568; /* Ciemniejszy odcień szarości */
+  background-color: #4a5568;
 }
 
 .bg-gray-900 {
