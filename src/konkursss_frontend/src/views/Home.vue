@@ -97,13 +97,12 @@ const pobierzWpisy = async () => {
 };
 
 // Filter posts by selected cryptocurrency
-const filterPostsByCrypto = async() => {
+const filterPostsByCrypto =() => {
   if (props.selectedCrypto && wpisy.value.length > 0) {
     filteredWpisy.value = wpisy.value.filter(wpis => wpis.selected_crypto.toLowerCase() === props.selectedCrypto.toLowerCase());
   } else {
     filteredWpisy.value = [...wpisy.value];
   }
-  await pobierzWpisy();
 };
 
 // Check if user has liked a post
