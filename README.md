@@ -1,68 +1,70 @@
-# `konkursss`
+			Opis główny
 
-Welcome to your new `konkursss` project and to the Internet Computer development community. By default, creating a new project adds this README and some template files to your project directory. You can edit these template files to customize your project and to include your own code to speed up the development cycle.
 
-To get started, you might want to explore the project directory structure and the default configuration file. Working with this project in your development environment will not affect any production deployment or identity tokens.
+Nasz projekt to forum dyskusyjne, skierowane do entuzjastów i profesjonalistów z rynku kryptowalut. 
+Główna strona prezentuje najnowsze wpisy użytkowników, którzy dzielą się swoimi prognozami i analizami dotyczącymi różnych kryptowalut. 
+Ta sekcja umożliwia uczestnikom forum wymianę opinii oraz lepsze zrozumienie bieżących i przyszłych trendów rynkowych. Członkowie 
+społeczności mogą uczestniczyć w dyskusjach, śledzić interesujące ich tematy, a także dodawać nowe kryptowaluty do platformy. 
+W specjalnej zakładce, użytkownicy mogą zgłaszać propozycje nowych kryptowalut oraz głosować na ich dodanie do naszej bazy danych, co zapewnia 
+stałą aktualność i różnorodność dostępnych informacji. Forum Kryptowalut to idealne miejsce dla każdego, kto pragnie być na bieżąco z dynamicznie 
+rozwijającym się światem cyfrowych aktywów oraz aktywnie uczestniczyć w społeczności inwestorów i entuzjastów kryptowalut.
 
-To learn more before you start working with `konkursss`, see the following documentation available online:
 
-- [Quick Start](https://internetcomputer.org/docs/current/developer-docs/setup/deploy-locally)
-- [SDK Developer Tools](https://internetcomputer.org/docs/current/developer-docs/setup/install)
-- [Rust Canister Development Guide](https://internetcomputer.org/docs/current/developer-docs/backend/rust/)
-- [ic-cdk](https://docs.rs/ic-cdk)
-- [ic-cdk-macros](https://docs.rs/ic-cdk-macros)
-- [Candid Introduction](https://internetcomputer.org/docs/current/developer-docs/backend/candid/)
 
-If you want to start working on your project right away, you might want to try the following commands:
+			App.vue
+App.vue to główny komponent aplikacji, który zarządza kluczowymi funkcjami i interfejsem użytkownika na stronie głównej forum kryptowalut. 
+W nagłówku znajduje się logo aplikacji, które służy również jako link do strony głównej, oraz nawigacja umożliwiająca szybki dostęp do różnych sekcji 
+strony, takich jak dodawanie nowej kryptowaluty czy przesyłanie postów. Pole wyszukiwania kryptowalut pozwala użytkownikom na szybkie filtrowanie 
+dostępnych kryptowalut na podstawie nazwy lub skrótu, a wyniki są dynamicznie aktualizowane podczas wpisywania. Panel użytkownika wyświetla nazwę zalogowanego 
+użytkownika lub przycisk logowania, a także przycisk wylogowania dla zalogowanych użytkowników.
 
-```bash
-cd konkursss/
-dfx help
-dfx canister --help
-```
 
-## Running the project locally
 
-If you want to test your project locally, you can use the following commands:
+			Home.vue
 
-```bash
-# Starts the replica, running in the background
-dfx start --background
+Home.vue to komponent odpowiedzialny za wyświetlanie głównej zawartości strony, w tym listy postów użytkowników związanych z kryptowalutami. 
+Tło strony ma ciemny kolor, co podkreśla treści wizualne i tekstowe. W głównym obszarze znajduje się dynamiczna lista postów, która jest renderowana w 
+pętli, z każdym postem zawierającym informacje takie jak nazwa użytkownika, wybrana kryptowaluta oraz przewidywania dotyczące jej wartości. Każdy post zawiera 
+tekst, który może być pozytywnie lub negatywnie oceniany przez innych użytkowników za pomocą przycisków "lubię" i "nie lubię". Dodatkowo, użytkownicy mogą rozwinąć 
+sekcję komentarzy dla każdego posta, gdzie mogą dodawać nowe komentarze lub oceniać istniejące.
 
-# Deploys your canisters to the replica and generates your candid interface
-dfx deploy
-```
 
-Once the job completes, your application will be available at `http://localhost:4943?canisterId={asset_canister_id}`.
+			Login.vue 
 
-If you have made changes to your backend canister, you can generate a new candid interface with
 
-```bash
-npm run generate
-```
+Login.vue to komponent odpowiedzialny za logowanie użytkowników na platformie. Strona ma ciemne tło i centralnie umieszczony formularz logowania, co podkreśla jego kluczowe 
+znaczenie. Nagłówek "Log in" wprowadza użytkowników do procesu logowania, a poniżej znajduje się formularz składający się z dwóch pól: dla nazwy użytkownika i hasła.
+Po wypełnieniu formularza i przesłaniu go za pomocą przycisku "Log in", użytkownik jest uwierzytelniany przez backend, który sprawdza zgodność danych logowania z istniejącymi 
+kontami. W przypadku błędnych danych, wyświetlany jest komunikat błędu informujący o nieprawidłowej nazwie użytkownika lub haśle.
+Dla nowych użytkowników, poniżej formularza dostępna jest opcja rejestracji, która prowadzi do strony rejestracji za pomocą linku "Register". 
+Komponent używa Vue Router do nawigacji i obsługuje przechowywanie danych użytkownika w store aplikacji, aby zachować stan zalogowania po udanym logowaniu.
 
-at any time. This is recommended before starting the frontend development server, and will be run automatically any time you run `dfx deploy`.
 
-If you are making frontend changes, you can start a development server with
 
-```bash
-npm start
-```
+			Rejestracja.vue
 
-Which will start a server at `http://localhost:8080`, proxying API requests to the replica at port 4943.
+Rejestracja.vue to komponent służący do rejestracji nowych użytkowników na platformie. Strona ma ciemne tło i centralnie umieszczony formularz rejestracyjny, który zawiera 
+pola dla nazwy użytkownika, adresu e-mail i hasła.Formularz wymaga również zgody na warunki użytkowania, co jest sygnalizowane przez checkbox umieszczony poniżej pól 
+tekstowych. Użytkownicy mogą przesłać formularz, klikając przycisk "Register", który zmienia kolor na ciemniejszy po najechaniu, co podkreśla interaktywność.
+W przypadku problemów z rejestracją, użytkownik zobaczy komunikat o błędzie pod formularzem, co ułatwia rozpoznanie i rozwiązanie problemu. Ponadto, poniżej formularza znajduje 
+się link prowadzący do strony logowania dla użytkowników, którzy już mają konto. Komponent wykorzystuje router Vue do nawigacji i obsługuje komunikację z backendem w celu dodania 
+nowego użytkownika. W przypadku pomyślnej rejestracji użytkownik jest przekierowywany na stronę logowania.
 
-### Note on frontend environment variables
 
-If you are hosting frontend code somewhere without using DFX, you may need to make one of the following adjustments to ensure your project does not fetch the root key in production:
 
-- set`DFX_NETWORK` to `ic` if you are using Webpack
-- use your own preferred method to replace `process.env.DFX_NETWORK` in the autogenerated declarations
-  - Setting `canisters -> {asset_canister_id} -> declarations -> env_override to a string` in `dfx.json` will replace `process.env.DFX_NETWORK` with the string in the autogenerated declarations
-- Write your own `createActor` constructor
-# Praca-wlasna-bootcamp
-# konkurs-bootcamp
-# konkurs-bootcamp
-# Praca-wlasna-bootcamp
-# konkurs-bootcamp
-# konkurs-bootcampv2
-# konkurs-bootcampv2
+			UploadPost.vue
+
+
+UploadPost.vue to komponent Vue, który umożliwia użytkownikom tworzenie nowych postów dotyczących kryptowalut. Strona ma ciemne tło i jest stylizowana na nowoczesny, minimalistyczny 
+wygląd, z centralnie umieszczonym panelem dodawania posta. Na górze panelu znajdują się dwa pola wyboru: pierwsze umożliwia użytkownikowi wybór kryptowaluty z listy dostępnych opcji, 
+które są pobierane z backendu, a drugie pozwala na określenie przewidywania kierunku rynku dla wybranej kryptowaluty. Użytkownicy mogą także wpisać tekst swojego posta w dużym polu 
+tekstowym, które zajmuje większą część panelu. Przycisk "Submit Post" pozwala na przesłanie danych na serwer po wypełnieniu wymaganych pól.Komponent sprawdza, czy użytkownik jest 
+zalogowany, zanim pozwoli na wysłanie posta; jeśli nie jest, wyświetla odpowiednią informację w konsoli.
+
+
+			Voting.vue
+
+Komponent Voting.vue umożliwia użytkownikom dodawanie nowych propozycji kryptowalut i głosowanie na istniejące propozycje. W sekcji dodawania propozycji użytkownicy mogą wpisać skrót 
+i nazwę kryptowaluty, a następnie kliknąć przycisk "Add Proposal", aby dodać propozycję do listy. Komponent wyświetla listę propozycji z przyciskami do głosowania "Approve" (za) i 
+"Reject" (przeciw), oraz aktualizuje liczby głosów w czasie rzeczywistym.
+
