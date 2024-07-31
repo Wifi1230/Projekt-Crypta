@@ -5,10 +5,8 @@
       <div class="text-white w-full text-center items-center">
       <p>If proposal have 5 approval votes then it adds to cryptocurrencies but if have 5 votes against then proposal is deleted</p>
     </div>
-    <!-- Section for adding new cryptocurrency proposal -->
     <div class="my-8">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Input fields for new cryptocurrency proposal -->
         <input 
           v-model="newProposal.shortcut" 
           type="text" 
@@ -30,7 +28,6 @@
       </button>
     </div>
 
-    <!-- Displaying cryptocurrency proposals -->
     <div v-if="proposals.length === 0" class="text-center text-gray-400">
       No proposals to display.
     </div>
@@ -41,7 +38,6 @@
         :key="proposal.index"
         class="bg-gray-700 p-4 m-2 rounded drop-shadow-xl"
       >
-        <!-- Voting section -->
         <div class="flex justify-between">
           <button 
             @click="likeProposal(proposal.index)" 
@@ -77,7 +73,6 @@ const newProposal = ref({
 
 const proposals = ref([]);
 
-// Fetch proposals from backend
 const fetchProposals = async () => {
   try {
     const proposalsData = await konkursss_backend.get_all_proposals();
@@ -88,7 +83,6 @@ const fetchProposals = async () => {
   }
 };
 
-// Add a new proposal
 const addProposal = async () => {
   const {shortcut, name } = newProposal.value;
   if (!shortcut.trim() || !name.trim()) {
@@ -103,7 +97,6 @@ const addProposal = async () => {
       likes: 0,
       dislikes: 0
     });
-    // Clear input fields after submission
     newProposal.value = {shortcut: '', name: '' };
     await fetchProposals(); // Refresh the list
   } catch (error) {
@@ -114,13 +107,12 @@ const userHasLiked = async (poroposalId) => {
   return await konkursss_backend.user_has_liked_proposal(userStore.username, poroposalId);
 };
 
-// Check if user has disliked a post
 const userHasDisliked = async (poroposalId) => {
   return await konkursss_backend.user_has_disliked_proposal(userStore.username, poroposalId);
 };
 
 
-// Like a proposal
+
 const likeProposal = async (index) => {
   try {
   const poroposalId = BigInt(index);
@@ -130,7 +122,7 @@ const likeProposal = async (index) => {
   if (hasLiked) {
       await konkursss_backend.like_proposal(userStore.username, poroposalId);
     } else {
-      // If the user disliked the post, remove the dislike and add a like
+
       if (hasDisliked) {
         await konkursss_backend.dislike_proposal(userStore.username, poroposalId);
       }
@@ -142,7 +134,7 @@ const likeProposal = async (index) => {
   }
 };
 
-// Dislike a proposal
+
 const dislikeProposal = async (index) => {
   try {
   const poroposalId = BigInt(index);
@@ -152,7 +144,6 @@ const dislikeProposal = async (index) => {
   if (hasDisliked) {
       await konkursss_backend.dislike_proposal(userStore.username, poroposalId);
     } else {
-      // If the user disliked the post, remove the dislike and add a like
       if (hasLiked) {
         await konkursss_backend.like_proposal(userStore.username, poroposalId);
       }
@@ -164,12 +155,11 @@ const dislikeProposal = async (index) => {
   }
 };
 
-// Fetch proposals on component mount
 onMounted(fetchProposals);
 </script>
 
 <style>
 .custom-height {
-  height: 20vh; /* Adjust the value based on your needs */
+  height: 20vh; 
 }
 </style>
