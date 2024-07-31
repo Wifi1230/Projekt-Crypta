@@ -1,9 +1,6 @@
 <template>
   <div class="bg-slate-900 h-screen flex flex-col items-center justify-center">
-
     <h1 class="text-3xl font-semibold text-white mt-8">Register</h1>
-    
-
     <div class="max-w-md w-full mx-auto p-8 bg-gray-700 border border-gray-900 rounded-lg shadow-lg">
       <form @submit.prevent="sendDatatoBack" class="space-y-4">
         <div>
