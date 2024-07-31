@@ -2,7 +2,6 @@ use std::collections::{HashMap, HashSet};
 use std::cell::RefCell;
 use candid::{CandidType, Deserialize};
 
-// Struktury danych
 #[derive(Clone, CandidType, Deserialize, Default)]
 struct CryptoEntry {
     name: String,
@@ -44,7 +43,6 @@ struct CryptoProposal {
     dislikes: u32,
 }
 
-// Struktura do przechowywania głosów użytkowników
 #[derive(Clone, CandidType, Deserialize, Default)]
 struct UserVotes {
     liked: HashSet<String>,
@@ -62,7 +60,6 @@ thread_local! {
     static PROPOSAL_VOTES: RefCell<HashMap<usize, UserVotes>> = RefCell::new(HashMap::new());
 }
 
-// Funkcje aktualizacyjne i zapytań
 
 #[ic_cdk::update]
 fn dodaj_wpis(entry: WpisAll) {
@@ -100,11 +97,9 @@ fn like_wpis(user_id: String, id_wpisu: usize) {
             let mut votes = VOTES.with(|v| v.borrow_mut().entry(id_wpisu).or_default().clone());
 
             if votes.liked.contains(&user_id) {
-                // Anuluj "like"
                 votes.liked.remove(&user_id);
                 wpis.likes -= 1;
             } else {
-                // Jeśli był "dislike", zamień na "like"
                 if votes.disliked.contains(&user_id) {
                     votes.disliked.remove(&user_id);
                     wpis.dislikes -= 1;
@@ -125,11 +120,9 @@ fn dislike_wpis(user_id: String, id_wpisu: usize) {
             let mut votes = VOTES.with(|v| v.borrow_mut().entry(id_wpisu).or_default().clone());
 
             if votes.disliked.contains(&user_id) {
-                // Anuluj "dislike"
                 votes.disliked.remove(&user_id);
                 wpis.dislikes -= 1;
             } else {
-                // Jeśli był "like", zamień na "dislike"
                 if votes.liked.contains(&user_id) {
                     votes.liked.remove(&user_id);
                     wpis.likes -= 1;
@@ -201,17 +194,13 @@ fn get_all_accounts() -> Vec<AccEntry> {
         accounts.borrow().clone()
     })
 }
-// Funkcja do usuwania konta
 #[ic_cdk::update]
 fn delete_account(username: String) -> Result<(), String> {
-    // Remove the account
     ACCOUNTS.with(|accounts| {
         let mut accounts = accounts.borrow_mut();
         if let Some(pos) = accounts.iter().position(|acc| acc.username == username) {
-            // Remove account from the list
             accounts.remove(pos);
             
-            // Remove related posts, comments, votes, and proposals
             WPISY.with(|wpisy| {
                 let mut wpisy = wpisy.borrow_mut();
                 wpisy.retain(|wpis| wpis.username != username);
@@ -219,7 +208,6 @@ fn delete_account(username: String) -> Result<(), String> {
             
             COMMENTS.with(|comments| {
                 let mut comments = comments.borrow_mut();
-                // Remove comments by the user
                 for comment_list in comments.values_mut() {
                     comment_list.retain(|comment| comment.username != username);
                 }
@@ -227,7 +215,6 @@ fn delete_account(username: String) -> Result<(), String> {
             
             VOTES.with(|votes| {
                 let mut votes = votes.borrow_mut();
-                // Remove votes by the user
                 for (_, user_votes) in votes.iter_mut() {
                     user_votes.liked.remove(&username);
                     user_votes.disliked.remove(&username);
@@ -236,7 +223,6 @@ fn delete_account(username: String) -> Result<(), String> {
             
             COMMENT_VOTES.with(|comment_votes| {
                 let mut comment_votes = comment_votes.borrow_mut();
-                // Remove comment votes by the user
                 for (_, user_votes) in comment_votes.iter_mut() {
                     user_votes.liked.remove(&username);
                     user_votes.disliked.remove(&username);
@@ -245,14 +231,11 @@ fn delete_account(username: String) -> Result<(), String> {
             
             PROPOSAL_VOTES.with(|proposal_votes| {
                 let mut proposal_votes = proposal_votes.borrow_mut();
-                // Remove proposal votes by the user
                 for (_, user_votes) in proposal_votes.iter_mut() {
                     user_votes.liked.remove(&username);
                     user_votes.disliked.remove(&username);
                 }
             });
-
-            // Remove proposals made by the user
             PROPOSALS.with(|proposals| {
                 let mut proposals = proposals.borrow_mut();
                 proposals.retain(|proposal| proposal.proposer != username);
@@ -280,12 +263,8 @@ fn usun_komentarz(wpis_index: usize, comment_index: usize) {
         if let Some(comment_list) = comments.borrow_mut().get_mut(&wpis_index) {
             if comment_index < comment_list.len() {
                 comment_list.remove(comment_index);
-
-                // Clean up votes for the removed comment
                 COMMENT_VOTES.with(|votes| {
                     votes.borrow_mut().remove(&(wpis_index, comment_index));
-                    
-                    // Adjust indices for subsequent comments
                     let keys_to_adjust: Vec<_> = votes
                         .borrow()
                         .keys()
@@ -303,16 +282,12 @@ fn usun_komentarz(wpis_index: usize, comment_index: usize) {
         }
     });
 }
-
-// Odczytywanie komentarzy dla danego wpisu
 #[ic_cdk::query]
 fn odczytaj_komentarze(wpis_index: usize) -> Vec<Comment> {
     COMMENTS.with(|comments| {
         comments.borrow().get(&wpis_index).cloned().unwrap_or_default()
     })
 }
-
-// Like dla komentarza
 #[ic_cdk::update]
 fn like_comment(user_id: String, wpis_index: usize, comment_index: usize) {
     COMMENTS.with(|comments| {
@@ -321,11 +296,9 @@ fn like_comment(user_id: String, wpis_index: usize, comment_index: usize) {
                 let mut votes = COMMENT_VOTES.with(|v| v.borrow_mut().entry((wpis_index, comment_index)).or_default().clone());
 
                 if votes.liked.contains(&user_id) {
-                    // Anuluj "like"
                     votes.liked.remove(&user_id);
                     comment.likes -= 1;
                 } else {
-                    // Jeśli był "dislike", zamień na "like"
                     if votes.disliked.contains(&user_id) {
                         votes.disliked.remove(&user_id);
                         comment.dislikes -= 1;
@@ -339,8 +312,6 @@ fn like_comment(user_id: String, wpis_index: usize, comment_index: usize) {
         }
     });
 }
-
-// disLike dla komentarza
 #[ic_cdk::update]
 fn dislike_comment(user_id: String, wpis_index: usize, comment_index: usize) {
     COMMENTS.with(|comments| {
@@ -349,11 +320,9 @@ fn dislike_comment(user_id: String, wpis_index: usize, comment_index: usize) {
                 let mut votes = COMMENT_VOTES.with(|v| v.borrow_mut().entry((wpis_index, comment_index)).or_default().clone());
 
                 if votes.disliked.contains(&user_id) {
-                    // Anuluj "dislike"
                     votes.disliked.remove(&user_id);
                     comment.dislikes -= 1;
                 } else {
-                    // Jeśli był "like", zamień na "dislike"
                     if votes.liked.contains(&user_id) {
                         votes.liked.remove(&user_id);
                         comment.likes -= 1;
@@ -367,51 +336,37 @@ fn dislike_comment(user_id: String, wpis_index: usize, comment_index: usize) {
         }
     });
 }
-
-// Sprawdzanie, czy użytkownik polubił komentarz
 #[ic_cdk::query]
 fn user_has_liked_comment(user_id: String, wpis_index: usize, comment_index: usize) -> bool {
     COMMENT_VOTES.with(|v| {
         v.borrow().get(&(wpis_index, comment_index)).map_or(false, |votes| votes.liked.contains(&user_id))
     })
 }
-
-// Sprawdzanie, czy użytkownik nie polubił komentarza
 #[ic_cdk::query]
 fn user_has_disliked_comment(user_id: String, wpis_index: usize, comment_index: usize) -> bool {
     COMMENT_VOTES.with(|v| {
         v.borrow().get(&(wpis_index, comment_index)).map_or(false, |votes| votes.disliked.contains(&user_id))
     })
 }
-
-// Dodawanie propozycji kryptowaluty
 #[ic_cdk::update]
 fn propose_crypto(proposal: CryptoProposal) {
     PROPOSALS.with(|proposals| {
         proposals.borrow_mut().push(proposal);
     });
 }
-
-// Usuwanie propozycji
 #[ic_cdk::update]
 fn usun_propozycje(proposal_index: usize) {
     PROPOSALS.with(|proposals| {
         if proposal_index < proposals.borrow().len() {
             proposals.borrow_mut().remove(proposal_index);
-
-            // Remove any votes associated with the proposal
             PROPOSAL_VOTES.with(|votes| {
                 votes.borrow_mut().remove(&proposal_index);
-
-                // Collect keys to adjust before modifying the map
                 let mut keys_to_adjust = Vec::new();
                 for (key, _) in votes.borrow().iter() {
                     if *key > proposal_index {
                         keys_to_adjust.push(*key);
                     }
                 }
-
-                // Adjust indices for subsequent proposals
                 for key in keys_to_adjust {
                     if let Some(entry) = votes.borrow_mut().remove(&key) {
                         votes.borrow_mut().insert(key - 1, entry);
@@ -421,8 +376,6 @@ fn usun_propozycje(proposal_index: usize) {
         }
     });
 }
-
-// Odczytywanie wszystkich propozycji
 #[ic_cdk::query]
 fn get_all_proposals() -> Vec<CryptoProposal> {
     PROPOSALS.with(|proposals| {
@@ -430,7 +383,6 @@ fn get_all_proposals() -> Vec<CryptoProposal> {
     })
 }
 
-// Like dla propozycji
 #[ic_cdk::update]
 fn like_proposal(user_id: String, proposal_index: usize) {
     PROPOSALS.with(|proposals| {
@@ -439,12 +391,10 @@ fn like_proposal(user_id: String, proposal_index: usize) {
             let mut votes = PROPOSAL_VOTES.with(|v| v.borrow_mut().entry(proposal_index).or_default().clone());
 
             if votes.liked.contains(&user_id) {
-                // Anuluj "like"
                 votes.liked.remove(&user_id);
                 proposal.likes -= 1;
             } else {
                 if votes.disliked.contains(&user_id) {
-                    // Remove dislike
                     votes.disliked.remove(&user_id);
                     proposal.dislikes -= 1;
                 }
@@ -454,9 +404,7 @@ fn like_proposal(user_id: String, proposal_index: usize) {
 
             PROPOSAL_VOTES.with(|v| v.borrow_mut().insert(proposal_index, votes));
 
-            // Check if the proposal has enough likes to be accepted
             if proposal.likes >= 5 {
-                // Add the crypto and remove the proposal
                 add_crypto(CryptoEntry {
                     name: proposal.name.clone(),
                     shortcut: proposal.shortcut.clone(),
@@ -475,12 +423,10 @@ fn dislike_proposal(user_id: String, proposal_index: usize) {
             let mut votes = PROPOSAL_VOTES.with(|v| v.borrow_mut().entry(proposal_index).or_default().clone());
 
             if votes.disliked.contains(&user_id) {
-                // Anuluj "dislike"
                 votes.disliked.remove(&user_id);
                 proposal.dislikes -= 1;
             } else {
                 if votes.liked.contains(&user_id) {
-                    // Remove like
                     votes.liked.remove(&user_id);
                     proposal.likes -= 1;
                 }
@@ -489,17 +435,13 @@ fn dislike_proposal(user_id: String, proposal_index: usize) {
             }
 
             PROPOSAL_VOTES.with(|v| v.borrow_mut().insert(proposal_index, votes));
-
-            // Check if the proposal has enough dislikes to be rejected
             if proposal.dislikes >= 5 {
-                // Remove the proposal
                 proposals_mut.remove(proposal_index);
             }
         }
     });
 }
 
-// Sprawdzanie, czy użytkownik polubił propozycję
 #[ic_cdk::query]
 fn user_has_liked_proposal(user_id: String, proposal_index: usize) -> bool {
     PROPOSAL_VOTES.with(|v| {
@@ -507,7 +449,6 @@ fn user_has_liked_proposal(user_id: String, proposal_index: usize) -> bool {
     })
 }
 
-// Sprawdzanie, czy użytkownik dissliked propozycji
 #[ic_cdk::query]
 fn user_has_disliked_proposal(user_id: String, proposal_index: usize) -> bool {
     PROPOSAL_VOTES.with(|v| {
