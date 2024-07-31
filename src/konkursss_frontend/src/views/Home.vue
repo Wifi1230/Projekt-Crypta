@@ -5,7 +5,6 @@
       <div class="flex justify-center w-full">
         <div class="w-2/3">
           <div class="text-white grid gap-4 my-10">
-
             <div v-for="(wpis, index) in filteredWpisy" :key="index" class="post drop-shadow-xl bg-gray-700 p-4 relative rounded-lg">
               <div class="flex flex-col mb-2">
               <div class="flex items-start mb-2">
