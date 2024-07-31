@@ -11,5 +11,4 @@
   </script>
 
   <style scoped>
-  /* Dodaj swoje style */
   </style>
