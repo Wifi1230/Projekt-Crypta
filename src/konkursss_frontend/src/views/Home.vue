@@ -97,12 +97,13 @@ const pobierzWpisy = async () => {
 };
 
 // Filter posts by selected cryptocurrency
-const filterPostsByCrypto = () => {
+const filterPostsByCrypto = async() => {
   if (props.selectedCrypto && wpisy.value.length > 0) {
     filteredWpisy.value = wpisy.value.filter(wpis => wpis.selected_crypto.toLowerCase() === props.selectedCrypto.toLowerCase());
   } else {
     filteredWpisy.value = [...wpisy.value];
   }
+  await pobierzWpisy();
 };
 
 // Check if user has liked a post
@@ -272,7 +273,7 @@ const dislikeComment = async (postIndex, commentIndex) => {
 const startAutoRefresh = () => {
   setInterval(async () => {
     await pobierzWpisy();
-  }, 5000); // Refresh every 5 seconds
+  }, 20000); // Refresh every 20 seconds
 };
 
 // Initialize on component mount
