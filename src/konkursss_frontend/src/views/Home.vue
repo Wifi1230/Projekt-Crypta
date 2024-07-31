@@ -5,7 +5,7 @@
       <div class="flex justify-center w-full">
         <div class="w-2/3">
           <div class="text-white grid gap-4 my-10">
-            <!-- Display posts -->
+
             <div v-for="(wpis, index) in filteredWpisy" :key="index" class="post drop-shadow-xl bg-gray-700 p-4 relative rounded-lg">
               <div class="flex flex-col mb-2">
               <div class="flex items-start mb-2">
@@ -77,14 +77,14 @@ const wpisy = ref([]);
 const filteredWpisy = ref([]);
 const newCommentText = ref([]); 
 
-// Fetch posts from backend
+
 const pobierzWpisy = async () => {
   const fetchedWpisy = await konkursss_backend.odczytaj_wpisy();
   wpisy.value = fetchedWpisy.map((wpis, index) => ({
     ...wpis,
     showComments: false,
     comments: [],
-    index // Ensure the index is a BigInt for compatibility
+    index 
   }));
   wpisy.value.sort((a, b) => b.index - a.index);
 
@@ -96,7 +96,7 @@ const pobierzWpisy = async () => {
   filterPostsByCrypto();
 };
 
-// Filter posts by selected cryptocurrency
+
 const filterPostsByCrypto =() => {
   if (props.selectedCrypto && wpisy.value.length > 0) {
     filteredWpisy.value = wpisy.value.filter(wpis => wpis.selected_crypto.toLowerCase() === props.selectedCrypto.toLowerCase());
@@ -105,17 +105,17 @@ const filterPostsByCrypto =() => {
   }
 };
 
-// Check if user has liked a post
+
 const userHasLiked = async (postId) => {
   return await konkursss_backend.user_has_liked(userStore.username, postId);
 };
 
-// Check if user has disliked a post
+
 const userHasDisliked = async (postId) => {
   return await konkursss_backend.user_has_disliked(userStore.username, postId);
 };
 
-// Handle liking a post
+
 const likePost = async (index) => {
   try {
     const totalPosts = wpisy.value.length;
@@ -125,10 +125,10 @@ const likePost = async (index) => {
     const hasDisliked = await userHasDisliked(postId);
 
     if (hasLiked) {
-      // If the user already liked the post, remove the like
+
       await konkursss_backend.like_wpis(userStore.username, postId);
     } else {
-      // If the user disliked the post, remove the dislike and add a like
+
       if (hasDisliked) {
         await konkursss_backend.dislike_wpis(userStore.username, postId);
       }
@@ -141,7 +141,7 @@ const likePost = async (index) => {
   }
 };
 
-// Handle disliking a post
+
 const dislikePost = async (index) => {
   try {
     const totalPosts = wpisy.value.length;
@@ -151,10 +151,10 @@ const dislikePost = async (index) => {
     const hasDisliked = await userHasDisliked(postId);
 
     if (hasDisliked) {
-      // If the user already disliked the post, remove the dislike
+
       await konkursss_backend.dislike_wpis(userStore.username, postId);
     } else {
-      // If the user liked the post, remove the like and add a dislike
+
       if (hasLiked) {
         await konkursss_backend.like_wpis(userStore.username, postId);
       }
@@ -167,12 +167,12 @@ const dislikePost = async (index) => {
   }
 };
 
-// Toggle comments section visibility
+
 const toggleComments = (index) => {
   filteredWpisy.value[index].showComments = !filteredWpisy.value[index].showComments;
 };
 
-// Add a new comment to a post
+
 const addComment = async (postIndex) => {
   try {
     const totalPosts = wpisy.value.length;
@@ -190,7 +190,7 @@ const addComment = async (postIndex) => {
     
     const comment = {
       text: commentText,
-      username: userStore.username, // Assign current user's username
+      username: userStore.username,
       likes: 0,
       dislikes: 0,
       wpis_index: postId,
@@ -204,17 +204,17 @@ const addComment = async (postIndex) => {
   }
 };
 
-// Check if user has liked a comment
+
 const userHasLikedComment = async (postId, commentId) => {
   return await konkursss_backend.user_has_liked_comment(userStore.username, postId, commentId);
 };
 
-// Check if user has disliked a comment
+
 const userHasDislikedComment = async (postId, commentId) => {
   return await konkursss_backend.user_has_disliked_comment(userStore.username, postId, commentId);
 };
 
-// Handle liking a comment
+
 const likeComment = async (postIndex, commentIndex) => {
   try {
     const totalPosts = wpisy.value.length;
@@ -225,10 +225,10 @@ const likeComment = async (postIndex, commentIndex) => {
     const hasDisliked = await userHasDislikedComment(postId, commentId);
 
     if (hasLiked) {
-      // If the user already liked the comment, remove the like
+
       await konkursss_backend.like_comment(userStore.username, postId, commentId);
     } else {
-      // If the user disliked the comment, remove the dislike and add a like
+
       if (hasDisliked) {
         await konkursss_backend.dislike_comment(userStore.username, postId, commentId);
       }
@@ -241,7 +241,7 @@ const likeComment = async (postIndex, commentIndex) => {
   }
 };
 
-// Handle disliking a comment
+
 const dislikeComment = async (postIndex, commentIndex) => {
   try {
     const totalPosts = wpisy.value.length;
@@ -252,10 +252,10 @@ const dislikeComment = async (postIndex, commentIndex) => {
     const hasDisliked = await userHasDislikedComment(postId, commentId);
 
     if (hasDisliked) {
-      // If the user already disliked the comment, remove the dislike
+
       await konkursss_backend.dislike_comment(userStore.username, postId, commentId);
     } else {
-      // If the user liked the comment, remove the like and add a dislike
+
       if (hasLiked) {
         await konkursss_backend.like_comment(userStore.username, postId, commentId);
       }
@@ -268,14 +268,14 @@ const dislikeComment = async (postIndex, commentIndex) => {
   }
 };
 
-// Auto-refresh posts every 5 seconds
+
 const startAutoRefresh = () => {
   setInterval(async () => {
     await pobierzWpisy();
-  }, 20000); // Refresh every 20 seconds
+  }, 20000); 
 };
 
-// Initialize on component mount
+
 onMounted(async () => {
   await pobierzWpisy();
   startAutoRefresh();
@@ -284,6 +284,6 @@ onMounted(async () => {
 
 <style>
 .custom-height {
-  height: 20vh; /* Adjust the value based on your needs */
+  height: 20vh;
 }
 </style>
