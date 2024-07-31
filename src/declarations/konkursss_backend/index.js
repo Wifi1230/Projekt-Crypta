@@ -1,6 +1,4 @@
 import { Actor, HttpAgent } from "@dfinity/agent";
-
-// Imports and re-exports candid interface
 import { idlFactory } from "./konkursss_backend.did.js";
 export { idlFactory } from "./konkursss_backend.did.js";
 
